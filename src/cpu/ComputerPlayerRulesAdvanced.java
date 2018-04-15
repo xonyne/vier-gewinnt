@@ -25,7 +25,7 @@ import java.util.Random;
 import java.util.Arrays;
 
 /** A computer player class */
-public class ComputerPlayer4 implements IPlayer{
+public class ComputerPlayerRulesAdvanced implements IPlayer{
 
 	private VierGewinnt.Token token;
 	private VierGewinnt.Token optoken;
@@ -33,10 +33,14 @@ public class ComputerPlayer4 implements IPlayer{
 	
 	Random generator = new Random();
 	
-	boolean [] scolumn = new boolean [8];
+	boolean [] scolumn;
 	
 	
 	public int getNextColumn(VierGewinnt.Token[][] board){
+            
+        int nrOfColumns = VierGewinnt.getNrOfColumns(board);
+        int nrOfRows = VierGewinnt.getNrOfRows(board);
+        scolumn = new boolean [nrOfColumns+1];
 	
 	token = this.getToken();
 	if (this.getToken()==token.player1) optoken = token.player2;
@@ -52,22 +56,22 @@ public class ComputerPlayer4 implements IPlayer{
 		Arrays.fill(scolumn,false);
 		
 		//waagrecht ***_
-		for(row=0 ; row<6 ; row++){
+		for(row=0 ; row<nrOfRows ; row++){
 			pl2=0;
-			for(column=0 ; column<7 ; column++){
+			for(column=0 ; column<nrOfColumns ; column++){
 				if (board[column][row]==token.player2) {pl2++;}
 				if (board[column][row]!=token.player2) {pl2=0;}
-				if (row==0 && pl2==3 && column<6 && board[column+1][row]==token.empty)
+				if (row==0 && pl2==3 && column<(nrOfColumns-1) && board[column+1][row]==token.empty)
 					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 4er gebaut ***_ (Reihe 1)");return column+1; }
-				if (row>0 && pl2==3 && column<6 && board[column+1][row]==token.empty && 
+				if (row>0 && pl2==3 && column<(nrOfColumns-1) && board[column+1][row]==token.empty && 
 					board[column+1][row-1]!=token.empty)
 					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 4er gebaut ***_ (Reihe > 1)");return column+1;}
 			}
 		}
 //		waagrecht _***
-		for(row=0 ; row<6 ; row++){
+		for(row=0 ; row<nrOfRows ; row++){
 			pl2=0;
-			for(column=6 ; column>0 ; column--){
+			for(column=(nrOfColumns-1) ; column>0 ; column--){
 				if (board[column][row]==token.player2) {pl2++;}
 				if (board[column][row]!=token.player2) {pl2=0;}
 				if (row==0 && pl2==3 && (board[column-1][row]==token.empty))
@@ -78,8 +82,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		waagrecht mit Lücke **-*		
-		for(row=0 ; row<6 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<nrOfRows ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl2=0;
 				if (board[column][row]==token) {pl2++;}
 				if (row==0 && board[column+2][row]==token.empty) {pl2++;}
@@ -90,8 +94,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		waagrecht mit Lücke *-**
-		for(row=0 ; row<6 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<nrOfRows ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl2=0;
 				if (board[column][row]==token) {pl2++;}
 				if (row>0 && board[column+1][row]==token.empty && board[column+2][row-1]!=token.empty)
@@ -102,8 +106,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 		//diagonal / mit Lücke **-*		
-		for(row=0 ; row<3 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl2=0;
 				if (board[column][row]==token) {pl2++;}
 				if (board[column+1][row+1]==token) {pl2++;}
@@ -114,8 +118,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal / mit Lücke *-**		
-		for(row=0 ; row<3 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl2=0;
 				if (board[column][row]==token) {pl2++;}
 				if (board[column+1][row+1]==token.empty && board[column+1][row]!=token.empty)
@@ -126,8 +130,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal \ mit Lücke **-*		
-		for(row=0 ; row<3 ; row++){
-			for(column=3 ; column<7 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<(nrOfColumns-3) ; column++){
 				pl2=0;
 				if (board[column][row]==token) {pl2++;}
 				if (board[column-1][row+1]==token) {pl2++;}
@@ -138,8 +142,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal \ mit Lücke *-**		
-		for(row=0 ; row<3 ; row++){
-			for(column=3 ; column<7 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<(nrOfColumns-3) ; column++){
 				pl2=0;
 				if (board[column][row]==token) {pl2++;}
 				if (board[column-1][row+1]==token.empty && board[column-1][row]!=token.empty)
@@ -150,9 +154,9 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		senkrecht		
-		for (column=0 ; column<7 ; column++){
+		for (column=0 ; column<nrOfColumns; column++){
 			pl2=0;
-			for(row=0 ; row<6 ; row++){
+			for(row=0 ; row<nrOfRows ; row++){
 				if (board[column][row]==token) {pl2++;}
 				if (board[column][row]!=token) {pl2=0;}
 				if (pl2==3 && row<5 && (board[column][row+1]==token.empty))
@@ -160,8 +164,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal /
-		for(row=0 ; row<3 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl2=0;
 				if (board[column][row]==token) pl2++;
 				if (board[column+1][row+1]==token) pl2++;
@@ -172,8 +176,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal \
-		for(row=0 ; row<3 ; row++){
-			for(column=3 ; column<7 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<nrOfColumns ; column++){
 				pl2=0;
 				if (board[column][row]==token) pl2++;
 				if (board[column-1][row+1]==token) pl2++;
@@ -185,8 +189,8 @@ public class ComputerPlayer4 implements IPlayer{
 		}
 		
 //		diagonal _/
-		for(row=1 ; row<4 ; row++){
-			for(column=1 ; column<5 ; column++){
+		for(row=1 ; row<(nrOfRows-2) ; row++){
+			for(column=1 ; column<(nrOfColumns-2) ; column++){
 				pl1=0;
 				if (board[column][row]==token) pl1++;
 				if (board[column+1][row+1]==token) pl1++;
@@ -199,8 +203,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal \_
-		for(row=1 ; row<4 ; row++){
-			for(column=2 ; column<6 ; column++){
+		for(row=1 ; row<(nrOfRows-2) ; row++){
+			for(column=2 ; column<(nrOfColumns-1) ; column++){
 				pl1=0;
 				if (board[column][row]==token) pl1++;
 				if (board[column-1][row+1]==token) pl1++;
@@ -216,9 +220,9 @@ public class ComputerPlayer4 implements IPlayer{
 //-------------------------------------------------------------------------------------------------	
 //einen 4er des hp verhindern - waagrecht ->
 		column=0;
-		for(row=0 ; row<6 ; row++){
+		for(row=0 ; row<nrOfRows ; row++){
 			pl1=0;
-			for(column=0 ; column<7 ; column++){
+			for(column=0 ; column<nrOfColumns ; column++){
 				if (board[column][row]==token.player1) {pl1++;}
 				if (board[column][row]!=token.player1) {pl1=0;}
 				if (row==0 && pl1==3 && column<6 && board[column+1][row]==token.empty)
@@ -232,9 +236,9 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		waagrecht <-
-		for(row=0 ; row<6 ; row++){
+		for(row=0 ; row<nrOfRows ; row++){
 			pl1=0;
-			for(column=6 ; column>0 ; column--){
+			for(column=(nrOfColumns-1) ; column>0 ; column--){
 				if (board[column][row]==token.player1) {pl1++;}
 				if (board[column][row]!=token.player1) {pl1=0;}
 				if (row==0 && pl1==3 && (board[column-1][row]==token.empty))
@@ -248,8 +252,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		waagrecht mit Lücke **-*		
-		for(row=0 ; row<6 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<nrOfRows ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column+1][row]==optoken) {pl1++;}
@@ -266,8 +270,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		waagrecht mit Lücke *-**		
-		for(row=0 ; row<6 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<nrOfRows ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) {pl1++;}
 				if (row==0 && board[column+1][row]==token.empty) {pl1++;}
@@ -284,8 +288,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal / mit Lücke **-*		
-		for(row=0 ; row<3 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column+1][row+1]==optoken) {pl1++;}
@@ -298,8 +302,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal / mit Lücke *-**		
-		for(row=0 ; row<3 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column+1][row+1]==token.empty && board[column+1][row]!=token.empty)
@@ -315,8 +319,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal \ mit Lücke **-*		
-		for(row=0 ; row<3 ; row++){
-			for(column=3 ; column<7 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<nrOfColumns ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column-1][row+1]==optoken) {pl1++;}
@@ -330,8 +334,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal \ mit Lücke *-**		
-		for(row=0 ; row<3 ; row++){
-			for(column=3 ; column<7 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<nrOfColumns ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column-1][row+1]==token.empty && board[column-1][row]!=token.empty)
@@ -349,17 +353,17 @@ public class ComputerPlayer4 implements IPlayer{
 		
 		
 //		senkrecht
-		for(column=0 ; column<7 ; column++){
+		for(column=0 ; column<nrOfColumns ; column++){
 			pl1=0;
-			for(row=0 ; row<6 ; row++){
+			for(row=0 ; row<nrOfRows ; row++){
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column][row]!=optoken) {pl1=0;}
 				if (pl1==3 && row<5 && (board[column][row+1]==token.empty)) {zug++ ; if(DEV_MODE) System.out.println("senkrecht 4er verhindert");return column;}
 			}
 		}
 //		diagonal /_
-		for(row=0 ; row<3 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) pl1++;
 				if (board[column+1][row+1]==optoken) pl1++;
@@ -374,8 +378,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal _\
-		for(row=0 ; row<3 ; row++){
-			for(column=3 ; column<7 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<nrOfColumns ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) pl1++;
 				if (board[column-1][row+1]==optoken) pl1++;
@@ -391,8 +395,8 @@ public class ComputerPlayer4 implements IPlayer{
 		}
 		
 //		diagonal _/
-		for(row=1 ; row<4 ; row++){
-			for(column=1 ; column<5 ; column++){
+		for(row=1 ; row<(nrOfRows-2) ; row++){
+			for(column=1 ; column<(nrOfColumns-2) ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) pl1++;
 				if (board[column+1][row+1]==optoken) pl1++;
@@ -411,8 +415,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal \_
-		for(row=1 ; row<4 ; row++){
-			for(column=2 ; column<6 ; column++){
+		for(row=1 ; row<(nrOfRows-2) ; row++){
+			for(column=2 ; column<(nrOfColumns-1) ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) pl1++;
 				if (board[column-1][row+1]==optoken) pl1++;
@@ -433,21 +437,21 @@ public class ComputerPlayer4 implements IPlayer{
 //---------------------------------------------------------------------------------------------------------		
 //einen 3er des hp verhindern - waagrecht ->
 		column=0;
-		for(row=0 ; row<6 ; row++){
+		for(row=0 ; row<nrOfRows ; row++){
 			pl1=0;
-			for(column=0 ; column<7 ; column++){
+			for(column=0 ; column<nrOfColumns ; column++){
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column][row]!=optoken) {pl1=0;}
-				if (scolumn[column+1]!=true && row==0 && pl1==2 && column<6 && (board[column+1][row]==token.empty))
+				if (scolumn[column+1]!=true && row==0 && pl1==2 && column<(nrOfColumns-1) && (board[column+1][row]==token.empty))
 					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 3er verhindert **_");return column+1;}
-				if (scolumn[column+1]!=true && row>0 && pl1==2 && column<6 && (board[column+1][row]==token.empty) && board[column+1][row-1]!=token.empty)
+				if (scolumn[column+1]!=true && row>0 && pl1==2 && column<(nrOfColumns-1) && (board[column+1][row]==token.empty) && board[column+1][row-1]!=token.empty)
 					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 3er verhindert **_");return column+1;}
 			}
 		}
 //		waagrecht <-
-		for(row=0 ; row<6 ; row++){
+		for(row=0 ; row<nrOfRows ; row++){
 			pl1=0;
-			for(column=6 ; column>0 ; column--){
+			for(column=(nrOfColumns-1) ; column>0 ; column--){
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column][row]!=optoken) {pl1=0;}
 				if (scolumn[column-1]!=true && row==0 && pl1==2 && (board[column-1][row]==token.empty)) 
@@ -457,10 +461,10 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		senkrecht
-		for(column=0 ; column<7 ; column++){
+		for(column=0 ; column<nrOfColumns ; column++){
 			pl1=0;
 			pl2=0;
-			for(row=0 ; row<6 ; row++){
+			for(row=0 ; row<nrOfRows ; row++){
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column][row]!=optoken) {pl1=0;}
 				if (scolumn[column]!=true && pl1==2 && row<5 && (board[column][row+1]==token.empty)) 
@@ -468,8 +472,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal /
-		for(row=0 ; row<3 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) pl1++;
 				if (board[column+1][row+1]==optoken) pl1++;
@@ -481,8 +485,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal \
-		for(row=0 ; row<3 ; row++){
-			for(column=3 ; column<7 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<nrOfColumns ; column++){
 				pl1=0;
 				if (board[column][row]==optoken) pl1++;
 				if (board[column-1][row+1]==optoken) pl1++;
@@ -495,9 +499,9 @@ public class ComputerPlayer4 implements IPlayer{
 		}
 //-------------------------------------------------------------------------------------------------------------------
 // Einen 3er bauen - waagrecht ->
-		for(row=0 ; row<6 ; row++){
+		for(row=0 ; row<nrOfRows ; row++){
 			pl2=0;
-			for(column=0 ; column<7 ; column++){
+			for(column=0 ; column<nrOfColumns ; column++){
 				if (board[column][row]==token) {pl2++;}
 				if (board[column][row]!=token) {pl2=0;}
 				if (scolumn[column+1]!=true && row==0 && pl2==2 && column<6 && board[column+1][row]==token.empty) 
@@ -507,9 +511,9 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		waagrecht <-
-		for(row=0 ; row<6 ; row++){
+		for(row=0 ; row<nrOfRows ; row++){
 			pl2=0;
-			for(column=6 ; column>0 ; column--){
+			for(column=(nrOfColumns-1) ; column>0 ; column--){
 				if (board[column][row]==token) {pl2++;}
 				if (board[column][row]!=token) {pl2=0;}
 				if (scolumn[column-1]!=true && row==0 && pl2==2 && column<6 && (board[column-1][row]==token.empty)) 
@@ -519,9 +523,9 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		senkrecht		
-		for (column=0 ; column<7 ; column++){
+		for (column=0 ; column<nrOfColumns ; column++){
 			pl2=0;
-			for(row=0 ; row<6 ; row++){
+			for(row=0 ; row<nrOfRows ; row++){
 				if (board[column][row]==token) {pl2++;}
 				if (board[column][row]!=token) {pl2=0;}
 				if (scolumn[column]!=true && pl2==2 && row<5 && (board[column][row+1]==token.empty)) 
@@ -529,8 +533,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal /
-		for(row=0 ; row<3 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl2=0;
 				if (board[column][row]==token) pl2++;
 				if (board[column+1][row+1]==token) pl2++;
@@ -541,8 +545,8 @@ public class ComputerPlayer4 implements IPlayer{
 			}
 		}
 //		diagonal \
-		for(row=0 ; row<3 ; row++){
-			for(column=3 ; column<7 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<nrOfColumns ; column++){
 				pl2=0;
 				if (board[column][row]==token) pl2++;
 				if (board[column-1][row+1]==token) pl2++;
@@ -555,11 +559,20 @@ public class ComputerPlayer4 implements IPlayer{
 //---------------------------------------------------------------------------------------------------------------------------
 //		Random
 //		Die ersten 20 Züge sollen tendentiell in die Mitte gesetzt werden
-		if (zug<20) {column=generator.nextInt(3); column=column+2;}
-		else column=generator.nextInt(7);
+                int min;
+                int max;
+                if (nrOfColumns % 2 == 0) {
+                    min = nrOfColumns / 2;
+                    max = (nrOfColumns / 2) + 1;
+                } else {
+                    min = (nrOfColumns -1) / 2;
+                    max = ((nrOfColumns -1) / 2)+2;
+                }
+		if (zug<20) {column=generator.nextInt((max - min) + 1) + min;}
+		else column=generator.nextInt(nrOfColumns);
 		int stop=0;
-		while (board[column][5]!=token.empty || scolumn[column]==true){
-			column=generator.nextInt(7);
+		while (board[column][nrOfRows-1]!=token.empty || scolumn[column]==true){
+			column=generator.nextInt(nrOfColumns);
 			stop++;
 			if (stop==20) {Arrays.fill(scolumn,false);}
 		}
@@ -576,6 +589,6 @@ public class ComputerPlayer4 implements IPlayer{
 	}
 	
 	public String getProgrammers(){
-		return "Roellu 4";
+		return "CPU Rules Advanced";
 	}
 }

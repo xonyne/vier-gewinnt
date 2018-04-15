@@ -9,14 +9,18 @@ public class ComputerPlayerRandom implements IPlayer{
 	private VierGewinnt.Token token;
 	
 	public int getNextColumn(VierGewinnt.Token[][] board){
-		Random generator = new Random();
-		int column = -1;
+		int nrOfColumns = VierGewinnt.getNrOfColumns(board);
+                int nrOfRows = VierGewinnt.getNrOfRows(board);
+                
+                Random generator = new Random();
+		
+                int column = -1;
 		
 		while(column < 0 || column > board.length - 1){
 			
-			column=generator.nextInt(7);
+			column=generator.nextInt(nrOfColumns);
 			if(column >= 0 && column < board.length){
-				int topRow = board[0].length-1;
+				int topRow = nrOfRows-1;
 				if(board[column][topRow] != VierGewinnt.Token.empty){
 					column = -1;
 				}
@@ -33,6 +37,6 @@ public class ComputerPlayerRandom implements IPlayer{
 	}
 	
 	public String getProgrammers(){
-		return "Random";
+		return "CPU Random";
 	}
 }

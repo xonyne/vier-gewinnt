@@ -21,50 +21,55 @@ import java.util.Random;
 
 
 /** A computer player class */
-public class ComputerPlayer implements IPlayer{
+public class ComputerPlayerRulesSimple implements IPlayer{
 
 	private VierGewinnt.Token token;
 	
 	Random generator = new Random();
-	
+        
 	public int getNextColumn(VierGewinnt.Token[][] board){
-//Einen 4er bauen - waagrecht ->
-		int row;
+
+		int nrOfColumns = VierGewinnt.getNrOfColumns(board);
+                int nrOfRows = VierGewinnt.getNrOfRows(board);
+                               
+                int row;
 		int pl1=0;
 		int pl2=0;
 		int column=0;
-		for(row=0 ; row<6 ; row++){
+//              *** Einen 4er bauen ***
+//              waagrecht ->
+		for(row=0 ; row<nrOfRows ; row++){
 			pl2=0;
-			for(column=0 ; column<7 ; column++){
+			for(column=0 ; column<nrOfColumns ; column++){
 				if (board[column][row]==token.player2) {pl2++;}
 				if (board[column][row]!=token.player2) {pl2=0;}
-				if (pl2==3 && column<6 && (board[column+1][row]==token.empty)) {return column+1;}
+				if (pl2==3 && column<(nrOfColumns-1) && (board[column+1][row]==token.empty)) {return column+1;}
 			}
 		}
 		
 //		waagrecht <-
-		for(row=0 ; row<6 ; row++){
+		for(row=0 ; row<nrOfRows ; row++){
 			pl2=0;
-			for(column=6 ; column>0 ; column--){
+			for(column=(nrOfColumns-1) ; column>0 ; column--){
 				if (board[column][row]==token.player2) {pl2++;}
 				if (board[column][row]!=token.player2) {pl2=0;}
-				if (pl2==3 && column<6 && (board[column-1][row]==token.empty)) {return column-1;}
+				if (pl2==3 && column<(nrOfColumns-1) && (board[column-1][row]==token.empty)) {return column-1;}
 			}
 		}
 
 //		senkrecht		
-		for (column=0 ; column<7 ; column++){
+		for (column=0 ; column<nrOfColumns ; column++){
 			pl2=0;
-			for(row=0 ; row<6 ; row++){
+			for(row=0 ; row<nrOfRows ; row++){
 				if (board[column][row]==token.player2) {pl2++;}
 				if (board[column][row]!=token.player2) {pl2=0;}
-				if (pl2==3 && row<5 && (board[column][row+1]==token.empty)) {return column;}
+				if (pl2==3 && row<(nrOfRows-1) && (board[column][row+1]==token.empty)) {return column;}
 			}
 		}
 		
 //		diagonal /
-		for(row=0 ; row<3 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl2=0;
 				if (board[column][row]==token.player2) pl2++;
 				if (board[column+1][row+1]==token.player2) pl2++;
@@ -75,8 +80,8 @@ public class ComputerPlayer implements IPlayer{
 		}
 		
 //		diagonal \
-		for(row=0 ; row<3 ; row++){
-			for(column=3 ; column<7 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<nrOfColumns ; column++){
 				pl2=0;
 				if (board[column][row]==token.player2) pl2++;
 				if (board[column-1][row+1]==token.player2) pl2++;
@@ -90,18 +95,18 @@ public class ComputerPlayer implements IPlayer{
 
 		column=0;
 
-		for(row=0 ; row<6 ; row++){
+		for(row=0 ; row<nrOfRows ; row++){
 			pl1=0;
-			for(column=0 ; column<7 ; column++){
+			for(column=0 ; column<nrOfColumns ; column++){
 				if (board[column][row]==token.player1) {pl1++;}
 				if (board[column][row]!=token.player1) {pl1=0;}
 				if (pl1==3 && column<6 && (board[column+1][row]==token.empty)) {return column+1;}
 			}
 		}
 //		waagrecht <-
-		for(row=0 ; row<6 ; row++){
+		for(row=0 ; row<nrOfRows ; row++){
 			pl1=0;
-			for(column=6 ; column>0 ; column--){
+			for(column=(nrOfColumns-1) ; column>0 ; column--){
 				if (board[column][row]==token.player1) {pl1++;}
 				if (board[column][row]!=token.player1) {pl1=0;}
 				if (pl1==3 && (board[column-1][row]==token.empty)) {column=column-1 ; return column;}
@@ -110,10 +115,10 @@ public class ComputerPlayer implements IPlayer{
 		
 		
 //		senkrecht
-		for(column=0 ; column<7 ; column++){
+		for(column=0 ; column<nrOfColumns ; column++){
 			pl1=0;
 			pl2=0;
-			for(row=0 ; row<6 ; row++){
+			for(row=0 ; row<nrOfRows; row++){
 				if (board[column][row]==token.player1) {pl1++;}
 				if (board[column][row]!=token.player1) {pl1=0;}
 				if (pl1==3 && row<5 && (board[column][row+1]==token.empty)) {return column;}
@@ -123,8 +128,8 @@ public class ComputerPlayer implements IPlayer{
 
 
 //		diagonal /
-		for(row=0 ; row<3 ; row++){
-			for(column=0 ; column<4 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
 				pl1=0;
 				if (board[column][row]==token.player1) pl1++;
 				if (board[column+1][row+1]==token.player1) pl1++;
@@ -136,8 +141,8 @@ public class ComputerPlayer implements IPlayer{
 		}
 
 //		diagonal \
-		for(row=0 ; row<3 ; row++){
-			for(column=3 ; column<7 ; column++){
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<nrOfColumns ; column++){
 				pl1=0;
 				if (board[column][row]==token.player1) pl1++;
 				if (board[column-1][row+1]==token.player1) pl1++;
@@ -147,21 +152,8 @@ public class ComputerPlayer implements IPlayer{
 					
 			}
 		}		
-		
-//	if(column >= 0 && column < board.length){
-//			int i=1;
-//			while (i==1){
-//				i=0;
-
-				column=generator.nextInt(7);
-//				if(board[column][5] == token.player1 || board[column][5] == token.player2 ){
-//					column=1;
-//				}
-//				int topRow = board[0].length-1;
-//				if(board[column][topRow] != VierGewinnt.Token.empty){i=1;}
-//			}
-//
-//		}		
+//              random
+		column=generator.nextInt(nrOfColumns);	
 		return column;
 	}
 	
@@ -173,6 +165,6 @@ public class ComputerPlayer implements IPlayer{
 	}
 	
 	public String getProgrammers(){
-		return "Roland 1";
+		return "CPU Rules Simple";
 	}
 }

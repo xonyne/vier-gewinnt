@@ -3,7 +3,7 @@ package viergewinnt;
 
 /** Inferface for VierGewinnt players */
 public interface IPlayer{
-	
+    
 	/** returns the name(s) of the programmer(s) */
 	public String getProgrammers();
 	

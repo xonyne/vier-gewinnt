@@ -11,25 +11,21 @@ public class VierGewinnt {
     private static long pl2wins;
     private static long draws;
     private static int max;
-    private int nrOfColumns;
-    private int nrOfRows;
     private Token[][] board;
     private static IPlayer[] players = new IPlayer[2]; // two players
     private int currentPlayer;
     private static boolean randomWins;
     private static ArrayList<String> spielzuege = new ArrayList<String>();
     
-    public int getNrOfColumns(){
-        return this.nrOfColumns;
+    public static int getNrOfColumns(Token[][] board){
+        return board.length;
     }
     
-    public int getNrOfRows(){
-        return this.nrOfRows;
+    public static int getNrOfRows(Token[][] board){
+        return board[0].length;
     }
     
     private VierGewinnt(int columns, int rows) {
-        this.nrOfColumns = columns;
-        this.nrOfColumns = rows;
         this.board = new Token[columns][rows];
     }
 
@@ -228,17 +224,15 @@ public class VierGewinnt {
         System.out.println("-------------Vier Gewinnt--------------");
         System.out.println();
         // initialize players
-        System.out.println("0. Human Player");
-        System.out.println("1. Computer Player \"Random\"");
-        System.out.println("2. Computer Player \"Roland 1\"");
-        System.out.println("3. Computer Player \"Roland 2\"");
-        System.out.println("4. Computer Player \"Roland 3\"");
-        System.out.println("5. Computer Player \"Roland 4\"");
+        System.out.println("1. Human Player");
+        System.out.println("2. Computer Player \"Random\"");
+        System.out.println("3. Computer Player \"Simple rules\"");
+        System.out.println("4. Computer Player \"Advanced Rules\"");
 
-        System.out.print("Choose player 1 (0-5): ");
+        System.out.print("Choose player 1 (1-4): ");
         int pl1 = new Scanner(System.in).nextInt();
 
-        System.out.print("Choose player 2 (0-5): ");
+        System.out.print("Choose player 2 (1-4): ");
         int pl2 = new Scanner(System.in).nextInt();
 
         System.out.print("Choose board size (columns x rows, default is 7x6):");
@@ -268,44 +262,32 @@ public class VierGewinnt {
         }
 
         switch (pl1) {
-            case 0:
+            case 1:
                 players[0] = new HumanPlayer();
                 break;
-            case 1:
+            case 2:
                 players[0] = new ComputerPlayerRandom();
                 break;
-            case 2:
-                players[0] = new ComputerPlayer();
-                break;
             case 3:
-                players[0] = new ComputerPlayer2();
+                players[0] = new ComputerPlayerRulesSimple();
                 break;
             case 4:
-                players[0] = new ComputerPlayer3();
-                break;
-            case 5:
-                players[0] = new ComputerPlayer4();
+                players[0] = new ComputerPlayerRulesAdvanced();
                 break;
         }
 
         switch (pl2) {
-            case 0:
+            case 1:
                 players[1] = new HumanPlayer();
                 break;
-            case 1:
+            case 2:
                 players[1] = new ComputerPlayerRandom();
                 break;
-            case 2:
-                players[1] = new ComputerPlayer();
-                break;
             case 3:
-                players[1] = new ComputerPlayer2();
+                players[1] = new ComputerPlayerRulesSimple();
                 break;
             case 4:
-                players[1] = new ComputerPlayer3();
-                break;
-            case 5:
-                players[1] = new ComputerPlayer4();
+                players[1] = new ComputerPlayerRulesAdvanced();
                 break;
         }
 
