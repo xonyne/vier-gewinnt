@@ -27,6 +27,8 @@ public class ComputerPlayerRulesSimple implements IPlayer{
 	
 	Random generator = new Random();
         
+        private int zug=0;
+        
 	public int getNextColumn(VierGewinnt.Token[][] board){
 
 		int nrOfColumns = VierGewinnt.getNrOfColumns(board);

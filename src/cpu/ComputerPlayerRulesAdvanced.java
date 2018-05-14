@@ -30,8 +30,9 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 	private VierGewinnt.Token token;
 	private VierGewinnt.Token optoken;
 	private final boolean DEV_MODE = true;
+	private int zug=0;
 	
-	Random generator = new Random();
+        Random generator = new Random();
 	
 	boolean [] scolumn;
 	
@@ -51,7 +52,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 		int pl1=0;
 		int pl2=0;
 		int column=0;
-		int zug=0;
+		
 		
 		Arrays.fill(scolumn,false);
 		

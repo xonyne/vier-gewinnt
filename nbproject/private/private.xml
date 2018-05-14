@@ -3,9 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/Users/kevin/git/vier-gewinnt/src/cpu/ComputerPlayerRandom.java</file>
             <file>file:/Users/kevin/git/vier-gewinnt/src/viergewinnt/VierGewinnt.java</file>
-            <file>file:/Users/kevin/git/vier-gewinnt/src/viergewinnt/HumanPlayer.java</file>
-            <file>file:/Users/kevin/git/vier-gewinnt/src/cpu/ComputerPlayer.java</file>
+            <file>file:/Users/kevin/git/vier-gewinnt/src/cpu/ComputerPlayerRulesSimple.java</file>
+            <file>file:/Users/kevin/git/vier-gewinnt/src/cpu/ComputerPlayerRulesAdvanced.java</file>
+            <file>file:/Users/kevin/git/vier-gewinnt/src/cpu/ComputerPlayerSearchTreeAlphaBeta.java</file>
+            <file>file:/Users/kevin/git/vier-gewinnt/src/cpu/ComputerPlayerCheapRushTrick.java</file>
+            <file>file:/Users/kevin/git/vier-gewinnt/src/viergewinnt/Connect4Move.java</file>
         </group>
     </open-files>
 </project-private>
