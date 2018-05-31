@@ -16,10 +16,10 @@ public class ComputerPlayerCheapRushTrick implements IPlayer{
                 Random generator = new Random();
 		
                 int column = -1;
-                int[] cheatArray = {3,4,5,2};
+                int[] cheapRushTrickArray = {3,4,5,2};
                 
                 if (zug<4){ 
-                    column = cheatArray[zug];
+                    column = cheapRushTrickArray[zug];
                     zug++;
                 } else {
                     while(column < 0 || column > board.length - 1){

@@ -1,26 +1,6 @@
 package cpu;
 
 import viergewinnt.*;
-
-/**ComputerPlayer
--------------------------------------------------------------------------
-                       Michael Beck 10-116-192
-                       Kevin Suter 09-125-899
--------------------------------------------------------------------------
-
-Mein Ansatz: computer sucht in dieser Reihenfolge nach Möglichkeiten:
-1. Kann er selbst einen 4er komplettieren?
-2. Kann er einen 4er vom hp verhindern?
-3. Kann er einen 3er des hp verhindern? (bei mehreren, welchen?)
-4. Kann er selbst einen 3er erweitern?
-
-5. Random (zu beginn tendentiell eher in die Mitte)
-Für meine eigene Übersicht, habe ich die 2 For-schleifen immer wieder neu geschrieben,
-dies ginge natürlich auch noch viel effizienter, indem man alle Varianten in die 2 selben
-Schleifen integriert. Dies ist aber zur Fehlersuche viel komplizierter..
-
-*/
-
 import java.util.Random;
 import java.util.Arrays;
 

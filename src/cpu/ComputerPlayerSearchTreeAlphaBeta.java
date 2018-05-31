@@ -6,15 +6,15 @@ import viergewinnt.IPlayer;
 import viergewinnt.VierGewinnt;
 
 /**
- * A random computer player class
+ * A computer player class
  */
 public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
 
     private VierGewinnt.Token token;
     private VierGewinnt.Token optoken;
     private int DEPTH = 1;
-    private static final int TIME_OUT_MS = 2000;
-    private static final int MAX_DEPTH = 60;
+    private static final int TIME_OUT_MS = 200;
+    private static final int MAX_DEPTH = 100;
     private static final boolean ITERATIVE_DEEPENING = true;
     private static long startTime;
 
@@ -33,7 +33,7 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
     private static final int[] movesByCol = {3, 4, 2, 5, 1, 6, 0};
 
     public int getNextColumn(VierGewinnt.Token[][] board) {
-        int move=0;
+        int move = 0;
         VierGewinnt.Token[][] boardCopy = VierGewinnt.copyBoard(board);
         if (ITERATIVE_DEEPENING) {
             move = getMoveIterativeDepth(boardCopy);
@@ -64,7 +64,7 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
     }
 
     private int getMoveFixedDepth(VierGewinnt.Token[][] board) throws TimeoutException {
-        int depth=DEPTH;
+        int depth = DEPTH;
         // pick the move
         // start alpha-beta with neg and pos infinities
         Connect4Move chosenMoveObj = pickMove(board, depth, -Integer.MAX_VALUE, Integer.MAX_VALUE);
@@ -137,7 +137,7 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
                     currentMove.move = column;
 
                 } else {
-                    currentMove = new Connect4Move(this.evalValue, column);
+                    currentMove = new Connect4Move(evaluate(board), column);
                 }
 
                 // Is the current move better than what we've found so far?
@@ -147,7 +147,7 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
                 }
 
                 // undo move before trying next move
-                undoMove(column, localEvalValue,board);
+                undoMove(column, localEvalValue, board);
             }
 
         }
@@ -201,25 +201,25 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
         // new set of moves with updated values
         return movesArray;
     }
-    
+
     /**
-	 * Undo the move to avoid creating a new state each time
-	 * 
-	 * @param column column to undo
-	 * @param stateEval static evaluation at that time
-	 */
-	public void undoMove(int column, int stateEval, VierGewinnt.Token[][] board){
-		int row = VierGewinnt.findTop(column, board);
+     * Undo the move to avoid creating a new state each time
+     *
+     * @param column column to undo
+     * @param stateEval static evaluation at that time
+     */
+    public void undoMove(int column, int stateEval, VierGewinnt.Token[][] board) {
+        int row = VierGewinnt.findTop(column, board);
 
-		// change back to empty
-		board[column][row] = token.empty;
+        // change back to empty
+        board[column][row] = VierGewinnt.Token.empty;
 
-		// change other parameters to original
-		playerToMoveNum = 1 - playerToMoveNum;
+        // change other parameters to original
+        playerToMoveNum = 1 - playerToMoveNum;
 
-		evalValue = stateEval;
-		movesDone--;
-	}
+        evalValue = stateEval;
+        movesDone--;
+    }
 
     /**
      * Make a move, dropping a checker in the given column
@@ -240,7 +240,7 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
 
             // Evaluation steps
             evalValue = evalValue - evalAdjust(openRow, col, board); // adjust the evaluation for the move
-            board[col][openRow] = this.token; // add the checker
+            board[col][openRow] = getActivePlayerToken(board); // add the checker
             evalValue = evalValue + evalAdjust(openRow, col, board); // reevaluate with new piece in place
 
             // Increment moves done
@@ -254,332 +254,364 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
             throw new IllegalStateException("Column is full!");
         }
     }
-    
+
     /**
-	 * Calibrates the position after a move is made (called with makeMove)
-	 * 
-	 * @param openRow the row in which the move will be made (the first open row in a col)
-	 * @param column the column in which the move was made
-	 * @return a new evaluation value
-	 */
-	private int evalAdjust(int openRow, int column, VierGewinnt.Token[][] board){
-		// declare offsets for position evaluation
-		int leftOffset, rightOffset, leftBound, rightBound;
+     * Calibrates the position after a move is made (called with makeMove)
+     *
+     * @param openRow the row in which the move will be made (the first open row
+     * in a col)
+     * @param column the column in which the move was made
+     * @return a new evaluation value
+     */
+    private int evalAdjust(int openRow, int column, VierGewinnt.Token[][] board) {
+        // declare offsets for position evaluation
+        int leftOffset, rightOffset, leftBound, rightBound;
 
-		// grab the players
-		VierGewinnt.Token opponent = this.optoken;
-		VierGewinnt.Token mainPlayer = this.token;
+        VierGewinnt.Token mainPlayer = getActivePlayerToken(board);
+        VierGewinnt.Token opponent = getInactivePlayerToken(board);
+                
+        leftBound = Math.max(column - 3, 0);
+        rightBound = Math.min(6, column + 3);
 
-		leftBound = Math.max(column - 3, 0);
-		rightBound = Math.min(6, column + 3);
+        // evaluate horizontal possibilities
+        int horizValue = evalPossibilities(mainPlayer, opponent, leftBound, rightBound,
+                openRow, 0, board);
 
-		// evaluate horizontal possibilities
-		int horizValue = evalPossibilities(mainPlayer, opponent, leftBound, rightBound,
-				openRow, 0, board);
+        // declare offset values for the diagonal
+        leftOffset = Math.min(Math.min(openRow, column), 3);
+        rightOffset = Math.min(Math.min(5 - openRow, 6 - column), 3);
+        int offsetOpenRow = openRow - leftOffset;
+        int offsetRightColumn = column + rightOffset;
+        int offsetLeftColumn = column - leftOffset;
+        int diagonalDelta = 1;
 
-		// declare offset values for the diagonal
-		leftOffset = Math.min(Math.min(openRow, column), 3);
-		rightOffset = Math.min(Math.min(5 - openRow, 6 - column), 3);
-		int offsetOpenRow = openRow - leftOffset;
-		int offsetRightColumn = column + rightOffset;
-		int offsetLeftColumn = column - leftOffset;
-		int diagonalDelta = 1;
+        // evaluate diagonal 1
+        int diagValueOne = evalPossibilities(mainPlayer, opponent, offsetLeftColumn, offsetRightColumn,
+                offsetOpenRow, diagonalDelta, board);
 
+        // change offset values for next diagonal
+        leftOffset = Math.min(Math.min(5 - openRow, column), 3);
+        rightOffset = Math.min(Math.min(openRow, 6 - column), 3);
 
-		// evaluate diagonal 1
-		int diagValueOne = evalPossibilities(mainPlayer, opponent, offsetLeftColumn, offsetRightColumn, 
-				offsetOpenRow, diagonalDelta, board);
+        offsetOpenRow = openRow + leftOffset;
+        offsetRightColumn = column + rightOffset;
+        offsetLeftColumn = column - leftOffset;
+        diagonalDelta = -1;
 
-		// change offset values for next diagonal
-		leftOffset = Math.min(Math.min(5 - openRow, column), 3);
-		rightOffset = Math.min(Math.min(openRow, 6 - column), 3);
+        // evaluate diagonal 2 (opp direction)
+        int diagValueTwo = evalPossibilities(mainPlayer, opponent, offsetLeftColumn,
+                offsetRightColumn, offsetOpenRow, diagonalDelta, board);
 
-		offsetOpenRow = openRow + leftOffset;
-		offsetRightColumn = column + rightOffset;
-		offsetLeftColumn = column - leftOffset;
-		diagonalDelta = -1;
+        // evaluate vertical Connect 4 possibilities
+        int verticalValue = connect4Verticals(mainPlayer, opponent, openRow, column, board);
 
-		// evaluate diagonal 2 (opp direction)
-		int diagValueTwo = evalPossibilities(mainPlayer, opponent, offsetLeftColumn, 
-				offsetRightColumn, offsetOpenRow, diagonalDelta, board);
+        // now return the total value of horizontal, vertical and diagonals
+        int sum = verticalValue + horizValue + diagValueOne + diagValueTwo;
 
-		// evaluate vertical Connect 4 possibilities
-		int verticalValue = connect4Verticals(mainPlayer, opponent, openRow, column, board);
+        return sum;
+    }
 
-		// now return the total value of horizontal, vertical and diagonals
-		int sum = verticalValue + horizValue + diagValueOne + diagValueTwo;
+    /**
+     * Method for evaluating the Connect 4 verticals and assigning them based on
+     * their strength i.e. how close they form a connect 4
+     *
+     * @param mainPlayer the player whose turn it is
+     * @param opponent the player's opponent
+     * @param row row we are checking
+     * @param column column we are checking
+     * @return sum int that is a representation of the position strength
+     */
+    private int connect4Verticals(VierGewinnt.Token mainPlayer, VierGewinnt.Token opponent, int row, int column, VierGewinnt.Token[][] board) {
+        // the bottom of a connect 4 is minimum row 0 or 3 checkers down
+        int possibleBottom;
+        possibleBottom = Math.max(0, row - 3);
+        int possibleTop = possibleBottom + 4;
 
-		return sum;
-	}
+        // counters to calculate eval values
+        int playerCount = 0;
+        int opponentCount = 0;
+        int verticalValue = 0;
 
-	/**
-	 * Method for evaluating the Connect 4 verticals and assigning them based on 
-	 * their strength i.e. how close they form a connect 4
-	 * 
-	 * @param mainPlayer the player whose turn it is
-	 * @param opponent the player's opponent
-	 * @param row row we are checking
-	 * @param column column we are checking
-	 * @return sum int that is a representation of the position strength
-	 */
-	private int connect4Verticals(VierGewinnt.Token mainPlayer, VierGewinnt.Token opponent, int row, int column, VierGewinnt.Token[][] board){
-		// the bottom of a connect 4 is minimum row 0 or 3 checkers down
-		int possibleBottom;
-		possibleBottom = Math.max(0, row - 3);
-		int possibleTop = possibleBottom + 4;
+        // Check for the Connect 4 from the bottom up
+        for (int checkRow = possibleBottom; checkRow < possibleTop; checkRow++) {
+            if (board[column][checkRow] == opponent) {
+                opponentCount = opponentCount + 1;
+            } else if (board[column][checkRow] == mainPlayer) {
+                playerCount = playerCount + 1;
+            }
+        }
 
-		// counters to calculate eval values
-		int playerCount = 0;
-		int opponentCount = 0;
-		int verticalValue = 0;
+        // if there isn't the other player's piece in the way, weight by position strength
+        verticalValue = applyWeights(playerCount, opponentCount, verticalValue);
 
-		// Check for the Connect 4 from the bottom up
-		for (int checkRow = possibleBottom; checkRow < possibleTop; checkRow++){
-			if (board[column][checkRow] == opponent){
-				opponentCount = opponentCount + 1;
-			} else if (board[column][checkRow] == mainPlayer){
-				playerCount = playerCount + 1;
-			}
-		}
+        // return this sum for the analysis of the verticals
+        return verticalValue;
+    }
 
-		// if there isn't the other player's piece in the way, weight by position strength
-		verticalValue = applyWeights(playerCount, opponentCount, verticalValue);
+    /**
+     * Public helper method to apply weights after looking at Connect 4
+     * possibilities
+     *
+     * @param playerCount the number of pieces player has in the connect 4 line
+     * @param opponentCount the number of pieces opponent has in the connect 4
+     * line
+     * @param sum the weighted sum so far
+     * @return the new sum after applying the weights.
+     */
+    public static int applyWeights(int playerCount, int opponentCount, int sum) {
+        // apply the weights based on the previous connect 4 possibilities
+        if (playerCount == 0) {
+            sum = sum - HOW_GOOD[opponentCount];
+        } else if (opponentCount == 0) {
+            sum = sum + HOW_GOOD[playerCount];
+        }
 
-		// return this sum for the analysis of the verticals
-		return verticalValue;
-	}
+        return sum;
+    }
 
+    /**
+     * Evaluates the possibilities for diagonal and horizontal connect fours
+     *
+     * @param mainPlayer the main player
+     * @param opponent the other player
+     * @param leftBound the leftside bound of the connect 4
+     * @param rightBound the rightside bound of the connect 4
+     * @param currentRow the open row that the move piece would go into
+     * @param offsetRow the offset for diagonals (1 or -1), 0 for horizontals
+     * @return
+     */
+    private int evalPossibilities(VierGewinnt.Token mainPlayer, VierGewinnt.Token opponent, int leftBound,
+            int rightBound, int currentRow, int offsetRow, VierGewinnt.Token[][] board) {
 
+        // declare local variables
+        int boundDiff = rightBound - leftBound;
+        int opponentCount = 0;
+        int playerCount = 0;
+        int sum = 0;
+        int checkColumn = leftBound;
+        int checkRow = currentRow;
 
-	/**
-	 * Public helper method to apply weights after looking at Connect 4
-	 * possibilities
-	 * 
-	 * @param playerCount the number of pieces player has in the connect 4 line
-	 * @param opponentCount the number of pieces opponent has in the connect 4 line
-	 * @param sum the weighted sum so far
-	 * @return the new sum after applying the weights.
-	 */
-	public static int applyWeights(int playerCount, int opponentCount, int sum){
-		// apply the weights based on the previous connect 4 possibilities
-		if (playerCount == 0){
-			sum = sum - HOW_GOOD[opponentCount];
-		} else if (opponentCount == 0) {
-			sum = sum + HOW_GOOD[playerCount];
-		}
+        // -4 or 4 depending on which type of diagonal
+        // 0 if checking horizontal
+        int diagonalDelta = offsetRow * 4;
 
-		return sum;
-	}
+        if (boundDiff < 3) {
+            return 0;
+        }
 
-	/**
-	 * Evaluates the possibilities for diagonal and horizontal connect fours
-	 * 
-	 * @param mainPlayer the main player
-	 * @param opponent the other player
-	 * @param leftBound the leftside bound of the connect 4
-	 * @param rightBound the rightside bound of the connect 4
-	 * @param currentRow the open row that the move piece would go into
-	 * @param offsetRow the offset for diagonals (1 or -1), 0 for horizontals
-	 * @return
-	 */
-	private int evalPossibilities(VierGewinnt.Token mainPlayer, VierGewinnt.Token opponent, int leftBound, 
-			int rightBound, int currentRow, int offsetRow, VierGewinnt.Token[][] board){
+        // ++ for row and column for diagonals
+        // ++ for column for horizontals
+        for (checkColumn = checkColumn;
+                checkColumn <= leftBound + 3;
+                checkRow += offsetRow) {
 
-		// declare local variables
-		int boundDiff = rightBound - leftBound;
-		int opponentCount = 0;
-		int playerCount = 0;
-		int sum = 0;
-		int checkColumn = leftBound;
-		int checkRow = currentRow; 
+            // check whose pieces belong to whom
+            if (board[checkColumn][checkRow] == opponent) {
+                opponentCount = opponentCount + 1;
+            } else if (board[checkColumn][checkRow] == mainPlayer) {
+                playerCount = playerCount + 1;
+            }
+            checkColumn = checkColumn + 1;
 
-		// -4 or 4 depending on which type of diagonal
-		// 0 if checking horizontal
-		int diagonalDelta = offsetRow * 4;
+        }
 
-		if (boundDiff < 3) {
-			return 0;
-		}
+        // apply the weights based on the previous connect 4 possibilities
+        sum = applyWeights(playerCount, opponentCount, sum);
 
-		// ++ for row and column for diagonals
-		// ++ for column for horizontals
-		for (checkColumn = checkColumn; 
-				checkColumn <= leftBound + 3;
-				checkRow += offsetRow) {
+        // ++ for row and column for diagonals
+        // ++ for column for horizontals
+        for (checkColumn = checkColumn;
+                checkColumn <= rightBound;
+                checkRow += offsetRow) {
+            if (board[(checkColumn - 4)][(checkRow - diagonalDelta)] == opponent) {
+                opponentCount = opponentCount - 1;
+            }
 
-			// check whose pieces belong to whom
-			if (board[checkColumn][checkRow] == opponent){
-				opponentCount = opponentCount + 1;
-			} else if (board[checkColumn][checkRow] == mainPlayer){
-				playerCount = playerCount + 1;
-			}
-			checkColumn = checkColumn + 1;
+            if (board[(checkColumn - 4)][(checkRow - diagonalDelta)] == mainPlayer) {
+                playerCount = playerCount - 1;
+            }
 
-		}
+            if (board[checkColumn][checkRow] == opponent) {
+                opponentCount = opponentCount + 1;
+            }
 
-		// apply the weights based on the previous connect 4 possibilities
-		sum = applyWeights(playerCount, opponentCount, sum);
+            if (board[checkColumn][checkRow] == mainPlayer) {
+                playerCount = playerCount + 1;
+            }
 
-		// ++ for row and column for diagonals
-		// ++ for column for horizontals
-		for (checkColumn = checkColumn;
-				checkColumn <= rightBound;
-				checkRow += offsetRow){
-			if (board[(checkColumn - 4)][(checkRow - diagonalDelta)] == opponent){
-				opponentCount = opponentCount -1;
-			} 
+            // apply the weights
+            sum = applyWeights(playerCount, opponentCount, sum);
 
-			if (board[(checkColumn - 4)][(checkRow - diagonalDelta)] == mainPlayer) {
-				playerCount = playerCount -1;
-			}
+            checkColumn = checkColumn + 1;
+        }
 
-			if (board[checkColumn][checkRow] == opponent){
-				opponentCount = opponentCount + 1;
-			}
+        //	    System.out.println("total value is " + sum + "\n");
+        return sum;
+    }
 
-			if (board[checkColumn][checkRow] == mainPlayer) {
-				playerCount = playerCount + 1;
-			}
+    /**
+     * Evaluate position by finding unblocked 4 in a rows
+     *
+     * @param board
+     * @return a total int evaluation of unblocked four-in-rows for opp and
+     * computer
+     */
+    public int evaluate(VierGewinnt.Token[][] board) {
+        // grab the checker pieces and board
+        VierGewinnt.Token  player = getActivePlayerToken(board);
+        VierGewinnt.Token opponent = getInactivePlayerToken(board);
 
-			// apply the weights 
-			sum = applyWeights(playerCount, opponentCount, sum);
+        // value that evaluates the unblocked four-in-rows
+        int totalEvaluation = 0;
 
-			checkColumn = checkColumn + 1;
-		}
+        // Evaluate patterns for winning
+        //
+        //   . X X . .   => unblocked on both sides so we can connect 4
+        //  by placing another piece to become
+        //  . X X X .
+        for (int checkColumn = 0; checkColumn < VierGewinnt.getNrOfColumns(board) - 4; checkColumn++) {
+            // if 0 is empty, followed by 2 of my pieces and two more empty, this is a pattern
+            if (board[checkColumn][0] == VierGewinnt.Token.empty
+                    && board[checkColumn + 1][0] == player
+                    && board[checkColumn + 2][0] == player
+                    && board[checkColumn + 3][0] == VierGewinnt.Token.empty
+                    && board[checkColumn + 4][0] == VierGewinnt.Token.empty) {
+                totalEvaluation += HOW_GOOD[3];
+            } else if (board[checkColumn][0] == VierGewinnt.Token.empty
+                    && board[checkColumn + 1][0] == VierGewinnt.Token.empty
+                    && board[checkColumn + 2][0] == player
+                    && board[checkColumn + 3][0] == player
+                    && board[checkColumn + 4][0] == VierGewinnt.Token.empty) {
+                totalEvaluation += HOW_GOOD[3];
+            } else if (board[checkColumn][0] == VierGewinnt.Token.empty
+                    && board[checkColumn + 1][0] == opponent
+                    && board[checkColumn + 2][0] == opponent
+                    && board[checkColumn + 3][0] == VierGewinnt.Token.empty
+                    && board[checkColumn + 4][0] == VierGewinnt.Token.empty) {
+                totalEvaluation -= HOW_GOOD[3];
+            } else if (board[checkColumn][0] == VierGewinnt.Token.empty
+                    && board[checkColumn + 1][0] == VierGewinnt.Token.empty
+                    && board[checkColumn + 2][0] == opponent
+                    && board[checkColumn + 3][0] == opponent
+                    && board[checkColumn + 4][0] == VierGewinnt.Token.empty) {
+                totalEvaluation -= HOW_GOOD[3];
+            }
+        }
 
+        // Evaluate unblocked verticals
+        // all potential ver 4-in-row start from at most from row 2
+        for (int column = 0; column < VierGewinnt.getNrOfColumns(board); column++) {
+            for (int row = 0; row < 3; row++) {
+                int compCount = 0;
+                int oppCount = 0;
 
-		//	    System.out.println("total value is " + sum + "\n");
-		return sum;
-	}
-        
-        /**
-	 * Evaluate position by finding unblocked 4 in a rows
-	 * 
-	 * @param state the input state of the board
-	 * @return a total int evaluation of unblocked four-in-rows for opp and computer
-	 
-	public int evaluate(VierGewinnt.Token[][] board){
-		// grab the checker pieces and board
-		VierGewinnt.Token opponent = this.optoken;
-		char player = Connect4State.CHECKERS[state.getPlayerNum()];
+                for (int checkRow = row; checkRow < row + 4; checkRow++) {
+                    if (board[column][checkRow] == player) {
+                        compCount++;
+                    } else if (board[column][checkRow] == opponent) {
+                        oppCount++;
+                    }
+                }
 
-		char[][] board = state.getBoard();
+                totalEvaluation = applyWeights(oppCount, compCount, totalEvaluation);
+            }
+        }
 
-		// value that evaluates the unblocked four-in-rows
-		int totalEvaluation = 0;
+        // Evaluate unblocked horizontals
+        // all potential hor 4-in-row start from at most from halfway col
+        for (int column = 0; column <= VierGewinnt.getNrOfColumns(board) - 4; column++) {
+            for (int row = 0; row < VierGewinnt.getNrOfRows(board); row++) {
+                // counters for computer and opponent
+                int compCount = 0;
+                int oppCount = 0;
 
-		// Evaluate patterns for winning
-		//  
-		//   . X X . .   => unblocked on both sides so we can connect 4
-		//  by placing another piece to become
-		//  . X X X .
-		for (int checkColumn = 0; checkColumn < 3; checkColumn ++){
-			// if 0 is empty, followed by 2 of my pieces and two more empty, this is a pattern
-			if (board[0][checkColumn] == Connect4State.EMPTY &&
-					board[0][checkColumn + 1] == player && 
-					board[0][checkColumn + 2] == player &&
-					board[0][checkColumn + 3] == Connect4State.EMPTY && 
-					board[0][checkColumn + 4] == Connect4State.EMPTY){
-				totalEvaluation += HOW_GOOD[3];
-			} else if (board[0][checkColumn] == Connect4State.EMPTY &&
-					board[0][checkColumn + 1] == Connect4State.EMPTY &&
-					board[0][checkColumn + 2] == player &&
-					board[0][checkColumn + 3] == player &&
-					board[0][checkColumn + 4] == Connect4State.EMPTY){
-				totalEvaluation += HOW_GOOD[3];
-			}
-		}
+                for (int checkColumn = column; checkColumn < column + 4; checkColumn++) {
+                    // check whose checker it is and increment their counter
+                    if (board[checkColumn][row] == player) {
+                        compCount++;
+                    } else if (board[checkColumn][row] == opponent) {
+                        oppCount++;
+                    }
+                }
 
+                totalEvaluation = applyWeights(oppCount, compCount, totalEvaluation);
+            }
+        }
 
-		// Evaluate unblocked verticals
-		// all potential ver 4-in-row start from at most from row 2
-		for (int column = 0; column < Connect4Game.COLS; column++){
-			for (int row = 0; row < 3; row++){
-				int compCount = 0;
-				int oppCount = 0;
+        // Evaluate unblocked diagonals (up to right)
+        // up to right diagonal start at most from row 2, column 3
+        for (int column = 0; column < 4; column++) {
+            for (int row = 0; row < 3; row++) {
+                int compCount = 0;
+                int oppCount = 0;
 
-				for (int checkRow = row; checkRow < row + 4; checkRow++){
-					if (board[checkRow][column] == player){
-						compCount++;
-					} else if (board[checkRow][column] == opponent){
-						oppCount++;
-					}
-				}
+                int checkRow = row; // need a checkrow parameter for diag
+                for (int checkColumn = column; checkRow < row + 4; checkColumn++) {
+                    if (board[checkColumn][checkRow] == player) {
+                        compCount++;
+                    } else if (board[checkColumn][checkRow] == opponent) {
+                        oppCount++;
+                    }
 
-				totalEvaluation = Connect4Game.applyWeights(oppCount, compCount, totalEvaluation);
-			}
-		}
+                    checkRow++; // adjust for diagonal
+                }
 
-		// Evaluate unblocked horizontals
-		// all potential hor 4-in-row start from at most from halfway col
-		for (int column = 0; column <= 3; column++){
-			for(int row = 0; row < Connect4Game.ROWS; row++){
-				// counters for computer and opponent
-				int compCount = 0;
-				int oppCount = 0;
+                totalEvaluation = applyWeights(oppCount, compCount, totalEvaluation);
+            }
+        }
 
-				for (int checkColumn = column; checkColumn < column + 4; checkColumn++){
-					// check whose checker it is and increment their counter
-					if (board[row][checkColumn] == player){
-						compCount++;
-					} else if (board[row][checkColumn] == opponent){
-						oppCount++;
-					}
-				}
+        // Evaluate unblocked diagonals (down to right)
+        // down to right diagonal start at most from row 3, column 3
+        for (int column = 0; column < 4; column++) {
+            for (int row = 3; row <= 5; row++) {
+                int compCount = 0;
+                int oppCount = 0;
 
-				totalEvaluation = Connect4Game.applyWeights(oppCount, compCount, totalEvaluation);
-			}
-		}
+                int checkRow = row; // need a checkrow parameter for diag
+                for (int checkColumn = column; checkColumn < column + 4; checkColumn++) {
+                    if (board[checkColumn][checkRow] == player) {
+                        compCount++;
+                    } else if (board[checkColumn][checkRow] == opponent) {
+                        oppCount++;
+                    }
 
-		// Evaluate unblocked diagonals (up to right)
-		// up to right diagonal start at most from row 2, column 3
-		for (int column = 0; column < 4; column++){
-			for (int row = 0; row < 3; row++){
-				int compCount = 0;
-				int oppCount = 0;
+                    checkRow--; // adjust for diagonal
+                }
 
-				int checkRow = row; // need a checkrow parameter for diag
-				for (int checkColumn = column; checkRow < row + 4; checkColumn++){
-					if (board[checkRow][checkColumn] == player){
-						compCount++;
-					} else if (board[checkRow][checkColumn] == opponent){
-						oppCount++;
-					}
+                totalEvaluation = applyWeights(oppCount, compCount, totalEvaluation);
+            }
+        }
 
-					checkRow++; // adjust for diagonal
-				}
+        return totalEvaluation;
 
+    }
 
-				totalEvaluation = Connect4Game.applyWeights(oppCount, compCount, totalEvaluation);
-			}
-		}
+    private VierGewinnt.Token getActivePlayerToken(VierGewinnt.Token[][] board) {
+        int player1count = 0;
+        int player2count = 0;
+        for (int cols = 0; cols < VierGewinnt.getNrOfColumns(board); cols++) {
+            for (int rows = 0; rows < VierGewinnt.getNrOfRows(board); rows++) {
+                if (board[cols][rows] == VierGewinnt.Token.player1) player1count++;
+                if (board[cols][rows] == VierGewinnt.Token.player2) player2count++;
+            }
+        }
+        if (player1count > player2count) return VierGewinnt.Token.player2;
+        else return VierGewinnt.Token.player1;
+    }
+    
+    private VierGewinnt.Token getInactivePlayerToken(VierGewinnt.Token[][] board) {
+        int player1count = 0;
+        int player2count = 0;
+        for (int cols = 0; cols < VierGewinnt.getNrOfColumns(board); cols++) {
+            for (int rows = 0; rows < VierGewinnt.getNrOfRows(board); rows++) {
+                if (board[cols][rows] == VierGewinnt.Token.player1) player1count++;
+                if (board[cols][rows] == VierGewinnt.Token.player2) player2count++;
+            }
+        }
+        if (player1count > player2count) return VierGewinnt.Token.player1;
+        else return VierGewinnt.Token.player2;
+    }
 
-		// Evaluate unblocked diagonals (down to right)
-		// down to right diagonal start at most from row 3, column 3
-		for (int column = 0; column < 4; column++){
-			for (int row = 3; row <= 5; row++){
-				int compCount = 0;
-				int oppCount = 0;
-
-				int checkRow = row; // need a checkrow parameter for diag
-				for (int checkColumn = column; checkColumn < column + 4; checkColumn++){
-					if (board[checkRow][checkColumn] == player){
-						compCount++;
-					} else if (board[checkRow][checkColumn] == opponent){
-						oppCount++;
-					}
-
-					checkRow--; // adjust for diagonal
-				}
-
-				totalEvaluation = Connect4Game.applyWeights(oppCount, compCount, totalEvaluation);
-			}
-		}
-
-		return totalEvaluation;
-
-	}
-*/
     public void setToken(VierGewinnt.Token token) {
         this.token = token;
     }
