@@ -8,6 +8,7 @@
             <file>file:/Users/kevin/git/vier-gewinnt/src/cpu/ComputerPlayerRulesSimple.java</file>
             <file>file:/Users/kevin/git/vier-gewinnt/src/cpu/ComputerPlayerRulesAdvanced.java</file>
             <file>file:/Users/kevin/git/vier-gewinnt/src/cpu/ComputerPlayerSearchTreeAlphaBeta.java</file>
+            <file>file:/Users/kevin/git/vier-gewinnt/src/viergewinnt/HumanPlayer.java</file>
             <file>file:/Users/kevin/git/vier-gewinnt/src/cpu/ComputerPlayerCheapRushTrick.java</file>
             <file>file:/Users/kevin/git/vier-gewinnt/src/viergewinnt/Connect4Move.java</file>
         </group>

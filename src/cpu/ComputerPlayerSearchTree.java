@@ -8,14 +8,14 @@ import viergewinnt.VierGewinnt;
 /**
  * A computer player class
  */
-public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
+public class ComputerPlayerSearchTree implements IPlayer {
 
     private VierGewinnt.Token token;
     private VierGewinnt.Token optoken;
-    private int DEPTH = 1;
-    private static final int TIME_OUT_MS = 200;
-    private static final int MAX_DEPTH = 100;
-    private static final boolean ITERATIVE_DEEPENING = true;
+    private int DEPTH = 6;
+    private static final boolean ITERATIVE_DEEPENING = false;
+    private static final int TIME_OUT_MS = 2000;
+    private static final int MAX_DEPTH = 10;
     private static long startTime;
 
     private int playerToMoveNum; // 0 or 1 for which player to go
@@ -24,13 +24,9 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
     private int movesDone; // number of moves made
     private int evalValue; // evaluation of unblocked four-in-row for both players
 
-    // my weights
-    // need to be public/package for testing static evaluation func in Connect4Game.java
     public static final int[] HOW_GOOD = {0, 2, 10 ^ 2, 10 ^ 3, 10 ^ 8}; // index is # of unblocked four-in-row potentials
 
-    // the closer a piece is to the center, the more 4-in-row permutations available.
-    // i.e.., generally center piece is most valuable
-    private static final int[] movesByCol = {3, 4, 2, 5, 1, 6, 0};
+    private static final int[] MOVES_BY_COL = {3, 4, 2, 5, 1, 6, 0};
 
     public int getNextColumn(VierGewinnt.Token[][] board) {
         int move = 0;
@@ -47,20 +43,24 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
     }
 
     private int getMoveIterativeDepth(VierGewinnt.Token[][] board) {
-        int chosenMove = 0;
+        int bestMoveDepth = 0;
+        Connect4Move bestMove = new Connect4Move(-Integer.MAX_VALUE, -10);
         int depth = 0;
         startTime = System.currentTimeMillis();
         try {
-            while (depth < MAX_DEPTH) {
+            while (depth < MAX_DEPTH) {      
                 // pick the move
                 // start alpha-beta with neg and pos infinities
-                Connect4Move chosenMoveObj = pickMove(board, depth, -Integer.MAX_VALUE, Integer.MAX_VALUE);
-                chosenMove = chosenMoveObj.move;
+                bestMove = pickMove(board, depth, -Integer.MAX_VALUE, Integer.MAX_VALUE);
+                bestMoveDepth = depth;
                 depth++;
             }
         } catch (TimeoutException ignored) {
+            System.out.println("---- Best move found at depth :" + bestMoveDepth + " ---");
+            System.out.println("---- Best move column :" + (bestMove.move + 1) + " ---");
+            System.out.println("---- Best move value :" + bestMove.value + " ---");
         }
-        return chosenMove;
+        return bestMove.move;
     }
 
     private int getMoveFixedDepth(VierGewinnt.Token[][] board) throws TimeoutException {
@@ -69,7 +69,6 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
         // start alpha-beta with neg and pos infinities
         Connect4Move chosenMoveObj = pickMove(board, depth, -Integer.MAX_VALUE, Integer.MAX_VALUE);
         int chosenMove = chosenMoveObj.move;
-
         return chosenMove;
     }
 
@@ -82,7 +81,6 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
      * @param low a value that the player can achieve by some other move
      * @param high a value that the opponent can force by a different line of
      * play
-     * @param view view for testing purposes
      *
      * @return the move chosen
      */
@@ -112,10 +110,6 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
 
                 makeMove(column, board);
 
-                System.out.println("===============");
-                System.out.println("Position Eval # :" + this.evalValue);
-                System.out.println("===============");
-
                 if (VierGewinnt.isGameOver(board)) {
                     // Is game over because board is full?
                     if (VierGewinnt.isBoardFull(board)) {
@@ -127,7 +121,6 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
 
                 } // keep going if depth available
                 else if (depth >= 1) {
-
                     // Switch player perspective
                     // Reduce depth by 1
                     currentMove = pickMove(board, depth - 1, -high, -low);
@@ -138,20 +131,25 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
 
                 } else {
                     currentMove = new Connect4Move(evaluate(board), column);
+                    
                 }
 
                 // Is the current move better than what we've found so far?
                 if (currentMove.value > bestMove.value) {
                     bestMove = currentMove; // replace
+                    //System.out.println("Best move column: #" + (bestMove.move + 1) + ", value: " + bestMove.value);
                     low = Math.max(bestMove.value, low); // update the achievable lower bound value
                 }
-
+                //System.out.println("column: " + currentMove.move + ", " + currentMove.value);
                 // undo move before trying next move
                 undoMove(column, localEvalValue, board);
+                
+               // System.out.println("Current move column: #" + (currentMove.move + 1) + ", value: " + currentMove.value);
+
             }
-
+            
         }
-
+        
         return bestMove;
     }
 
@@ -170,7 +168,7 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
 
         // go through each column in move list
         for (int i = 0; i < nrOfColumns; i++) {
-            int theMove = movesByCol[i];
+            int theMove = MOVES_BY_COL[i];
 
             movesArray[i] = new Connect4Move(-Integer.MAX_VALUE, theMove);
             if (VierGewinnt.isValidMove(theMove, board)) {
@@ -269,7 +267,7 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
 
         VierGewinnt.Token mainPlayer = getActivePlayerToken(board);
         VierGewinnt.Token opponent = getInactivePlayerToken(board);
-                
+
         leftBound = Math.max(column - 3, 0);
         rightBound = Math.min(6, column + 3);
 
@@ -448,6 +446,179 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
         //	    System.out.println("total value is " + sum + "\n");
         return sum;
     }
+    
+    private boolean canMakeFour(VierGewinnt.Token[][] board, VierGewinnt.Token token) {
+    int row = 0;
+    int column = 0;
+    int nrOfRows = VierGewinnt.getNrOfRows(board);
+    int nrOfColumns = VierGewinnt.getNrOfColumns(board);
+    int zug;
+    int pl2;
+    int pl1;
+    
+    //waagrecht ***_
+		for(row=0 ; row<nrOfRows ; row++){
+			pl2=0;
+			for(column=0 ; column<nrOfColumns ; column++){
+				if (board[column][row]==token.player2) {pl2++;}
+				if (board[column][row]!=token.player2) {pl2=0;}
+				if (row==0 && pl2==3 && column<(nrOfColumns-1) && board[column+1][row]==token.empty)
+					{return true;}
+				if (row>0 && pl2==3 && column<(nrOfColumns-1) && board[column+1][row]==token.empty && 
+					board[column+1][row-1]!=token.empty)
+					{return true;}
+			}
+		}
+//		waagrecht _***
+		for(row=0 ; row<nrOfRows ; row++){
+			pl2=0;
+			for(column=(nrOfColumns-1) ; column>0 ; column--){
+				if (board[column][row]==token.player2) {pl2++;}
+				if (board[column][row]!=token.player2) {pl2=0;}
+				if (row==0 && pl2==3 && (board[column-1][row]==token.empty))
+					{return true;}
+				if (row>0 && pl2==3 && (board[column-1][row]==token.empty && 
+					board[column-1][row-1]!=token.empty))
+					{return true;}
+			}
+		}
+//		waagrecht mit Lücke **-*		
+		for(row=0 ; row<nrOfRows ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
+				pl2=0;
+				if (board[column][row]==token) {pl2++;}
+				if (row==0 && board[column+2][row]==token.empty) {pl2++;}
+				if (row>0 && board[column+2][row]==token.empty && board[column+2][row-1]!=token.empty)
+					{pl2++;}
+				if (board[column+3][row]==token) {pl2++;}
+				if (pl2==4) {return true;}
+			}
+		}
+//		waagrecht mit Lücke *-**
+		for(row=0 ; row<nrOfRows ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
+				pl2=0;
+				if (board[column][row]==token) {pl2++;}
+				if (row>0 && board[column+1][row]==token.empty && board[column+2][row-1]!=token.empty)
+					{pl2++;}
+				if (board[column+2][row]==token) {pl2++;}
+				if (board[column+3][row]==token) {pl2++;}								
+				if (pl2==4) {return true;}
+			}
+		}
+		//diagonal / mit Lücke **-*		
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
+				pl2=0;
+				if (board[column][row]==token) {pl2++;}
+				if (board[column+1][row+1]==token) {pl2++;}
+				if (board[column+2][row+2]==token.empty && board[column+2][row+1]!=token.empty)
+					{pl2++;}
+				if (board[column+3][row+3]==token) {pl2++;}				
+				if (pl2==4) {return true;}
+			}
+		}
+//		diagonal / mit Lücke *-**		
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
+				pl2=0;
+				if (board[column][row]==token) {pl2++;}
+				if (board[column+1][row+1]==token.empty && board[column+1][row]!=token.empty)
+					{pl2++;}
+				if (board[column+2][row+2]==token) {pl2++;}
+				if (board[column+3][row+3]==token) {pl2++;}
+				if (pl2==4) {return true;}		
+			}
+		}
+//		diagonal \ mit Lücke **-*		
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<(nrOfColumns-3) ; column++){
+				pl2=0;
+				if (board[column][row]==token) {pl2++;}
+				if (board[column-1][row+1]==token) {pl2++;}
+				if (board[column-2][row+2]==token.empty && board[column-2][row+1]!=token.empty)
+					{pl2++;}
+				if (board[column-3][row+3]==token) {pl2++;}				
+				if (pl2==4) {return true;}
+			}
+		}
+//		diagonal \ mit Lücke *-**		
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<(nrOfColumns-3) ; column++){
+				pl2=0;
+				if (board[column][row]==token) {pl2++;}
+				if (board[column-1][row+1]==token.empty && board[column-1][row]!=token.empty)
+					{pl2++;}
+				if (board[column-2][row+2]==token) {pl2++;}
+				if (board[column-3][row+3]==token) {pl2++;}
+				if (pl2==4) {return true;}		
+			}
+		}
+//		senkrecht		
+		for (column=0 ; column<nrOfColumns; column++){
+			pl2=0;
+			for(row=0 ; row<nrOfRows ; row++){
+				if (board[column][row]==token) {pl2++;}
+				if (board[column][row]!=token) {pl2=0;}
+				if (pl2==3 && row<5 && (board[column][row+1]==token.empty))
+					{return true;}
+			}
+		}
+//		diagonal /
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=0 ; column<(nrOfColumns-3) ; column++){
+				pl2=0;
+				if (board[column][row]==token) pl2++;
+				if (board[column+1][row+1]==token) pl2++;
+				if (board[column+2][row+2]==token) pl2++;
+				if (pl2==3 && (board[column+3][row+2]!=token.empty) && 
+					(board[column+3][row+3]==token.empty))
+					{return true;} 
+			}
+		}
+//		diagonal \
+		for(row=0 ; row<(nrOfRows-3) ; row++){
+			for(column=3 ; column<nrOfColumns ; column++){
+				pl2=0;
+				if (board[column][row]==token) pl2++;
+				if (board[column-1][row+1]==token) pl2++;
+				if (board[column-2][row+2]==token) pl2++;
+				if (pl2==3 && (board[column-3][row+2]!=token.empty) && 
+					(board[column-3][row+3]==token.empty))
+					{return true;} 
+			}
+		}
+		
+//		diagonal _/
+		for(row=1 ; row<(nrOfRows-2) ; row++){
+			for(column=1 ; column<(nrOfColumns-2) ; column++){
+				pl1=0;
+				if (board[column][row]==token) pl1++;
+				if (board[column+1][row+1]==token) pl1++;
+				if (board[column+2][row+2]==token) pl1++;
+				if (row==1 && pl1==3 && (board[column-1][row-1]==token.empty))
+					{return true;}
+				if (row>1 && pl1==3 && (board[column-1][row-2]!=token.empty) && 
+					(board[column-1][row-1]==token.empty))
+					{return true;} 
+			}
+		}
+//		diagonal \_
+		for(row=1 ; row<(nrOfRows-2) ; row++){
+			for(column=2 ; column<(nrOfColumns-1) ; column++){
+				pl1=0;
+				if (board[column][row]==token) pl1++;
+				if (board[column-1][row+1]==token) pl1++;
+				if (board[column-2][row+2]==token) pl1++;
+				if (row==1 && pl1==3 && (board[column+1][row-1]==token.empty))
+					{return true;}
+				if (row>1 && pl1==3 && (board[column+1][row-2]!=token.empty) &&
+					(board[column+1][row-1]==token.empty))
+					{return true;} 	
+			}
+		}
+                return false;
+    }
 
     /**
      * Evaluate position by finding unblocked 4 in a rows
@@ -458,12 +629,16 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
      */
     public int evaluate(VierGewinnt.Token[][] board) {
         // grab the checker pieces and board
-        VierGewinnt.Token  player = getActivePlayerToken(board);
+        VierGewinnt.Token player = getActivePlayerToken(board);
         VierGewinnt.Token opponent = getInactivePlayerToken(board);
+        //VierGewinnt.Token player = VierGewinnt.Token.player1;
+        //VierGewinnt.Token opponent = VierGewinnt.Token.player2;
 
         // value that evaluates the unblocked four-in-rows
         int totalEvaluation = 0;
-
+        
+        if (canMakeFour(board, player) || canMakeFour(board, opponent)) return HOW_GOOD[4];
+        
         // Evaluate patterns for winning
         //
         //   . X X . .   => unblocked on both sides so we can connect 4
@@ -476,25 +651,13 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
                     && board[checkColumn + 2][0] == player
                     && board[checkColumn + 3][0] == VierGewinnt.Token.empty
                     && board[checkColumn + 4][0] == VierGewinnt.Token.empty) {
-                totalEvaluation += HOW_GOOD[3];
+                return HOW_GOOD[4];
             } else if (board[checkColumn][0] == VierGewinnt.Token.empty
                     && board[checkColumn + 1][0] == VierGewinnt.Token.empty
                     && board[checkColumn + 2][0] == player
                     && board[checkColumn + 3][0] == player
                     && board[checkColumn + 4][0] == VierGewinnt.Token.empty) {
-                totalEvaluation += HOW_GOOD[3];
-            } else if (board[checkColumn][0] == VierGewinnt.Token.empty
-                    && board[checkColumn + 1][0] == opponent
-                    && board[checkColumn + 2][0] == opponent
-                    && board[checkColumn + 3][0] == VierGewinnt.Token.empty
-                    && board[checkColumn + 4][0] == VierGewinnt.Token.empty) {
-                totalEvaluation -= HOW_GOOD[3];
-            } else if (board[checkColumn][0] == VierGewinnt.Token.empty
-                    && board[checkColumn + 1][0] == VierGewinnt.Token.empty
-                    && board[checkColumn + 2][0] == opponent
-                    && board[checkColumn + 3][0] == opponent
-                    && board[checkColumn + 4][0] == VierGewinnt.Token.empty) {
-                totalEvaluation -= HOW_GOOD[3];
+                return HOW_GOOD[4];
             }
         }
 
@@ -591,25 +754,39 @@ public class ComputerPlayerSearchTreeAlphaBeta implements IPlayer {
         int player2count = 0;
         for (int cols = 0; cols < VierGewinnt.getNrOfColumns(board); cols++) {
             for (int rows = 0; rows < VierGewinnt.getNrOfRows(board); rows++) {
-                if (board[cols][rows] == VierGewinnt.Token.player1) player1count++;
-                if (board[cols][rows] == VierGewinnt.Token.player2) player2count++;
+                if (board[cols][rows] == VierGewinnt.Token.player1) {
+                    player1count++;
+                }
+                if (board[cols][rows] == VierGewinnt.Token.player2) {
+                    player2count++;
+                }
             }
         }
-        if (player1count > player2count) return VierGewinnt.Token.player2;
-        else return VierGewinnt.Token.player1;
+        if (player1count > player2count) {
+            return VierGewinnt.Token.player2;
+        } else {
+            return VierGewinnt.Token.player1;
+        }
     }
-    
+
     private VierGewinnt.Token getInactivePlayerToken(VierGewinnt.Token[][] board) {
         int player1count = 0;
         int player2count = 0;
         for (int cols = 0; cols < VierGewinnt.getNrOfColumns(board); cols++) {
             for (int rows = 0; rows < VierGewinnt.getNrOfRows(board); rows++) {
-                if (board[cols][rows] == VierGewinnt.Token.player1) player1count++;
-                if (board[cols][rows] == VierGewinnt.Token.player2) player2count++;
+                if (board[cols][rows] == VierGewinnt.Token.player1) {
+                    player1count++;
+                }
+                if (board[cols][rows] == VierGewinnt.Token.player2) {
+                    player2count++;
+                }
             }
         }
-        if (player1count > player2count) return VierGewinnt.Token.player1;
-        else return VierGewinnt.Token.player2;
+        if (player1count > player2count) {
+            return VierGewinnt.Token.player1;
+        } else {
+            return VierGewinnt.Token.player2;
+        }
     }
 
     public void setToken(VierGewinnt.Token token) {

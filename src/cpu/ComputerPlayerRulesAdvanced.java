@@ -9,7 +9,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 
 	private VierGewinnt.Token token;
 	private VierGewinnt.Token optoken;
-	private final boolean DEV_MODE = true;
+
 	private int zug=0;
 	
         Random generator = new Random();
@@ -43,10 +43,10 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column][row]==token.player2) {pl2++;}
 				if (board[column][row]!=token.player2) {pl2=0;}
 				if (row==0 && pl2==3 && column<(nrOfColumns-1) && board[column+1][row]==token.empty)
-					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 4er gebaut ***_ (Reihe 1)");return column+1; }
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 4er gebaut ***_ (Reihe 1)");return column+1; }
 				if (row>0 && pl2==3 && column<(nrOfColumns-1) && board[column+1][row]==token.empty && 
 					board[column+1][row-1]!=token.empty)
-					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 4er gebaut ***_ (Reihe > 1)");return column+1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 4er gebaut ***_ (Reihe > 1)");return column+1;}
 			}
 		}
 //		waagrecht _***
@@ -56,10 +56,10 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column][row]==token.player2) {pl2++;}
 				if (board[column][row]!=token.player2) {pl2=0;}
 				if (row==0 && pl2==3 && (board[column-1][row]==token.empty))
-					{zug++ ; column=column-1 ; if(DEV_MODE) System.out.println("waagrecht 4er gebaut _*** (Reihe = 1)");return column;}
+					{zug++ ; column=column-1 ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 4er gebaut _*** (Reihe = 1)");return column;}
 				if (row>0 && pl2==3 && (board[column-1][row]==token.empty && 
 					board[column-1][row-1]!=token.empty))
-					{zug++ ; column=column-1 ;if(DEV_MODE) System.out.println("waagrecht 4er gebaut _*** (Reihe > 1)");return column;}
+					{zug++ ; column=column-1 ;if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 4er gebaut _*** (Reihe > 1)");return column;}
 			}
 		}
 //		waagrecht mit Lücke **-*		
@@ -71,7 +71,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (row>0 && board[column+2][row]==token.empty && board[column+2][row-1]!=token.empty)
 					{pl2++;}
 				if (board[column+3][row]==token) {pl2++;}
-				if (pl2==4) {zug++ ; if(DEV_MODE) System.out.println("waagrecht 4er gebaut **_*");return column+2;}
+				if (pl2==4) {zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 4er gebaut **_*");return column+2;}
 			}
 		}
 //		waagrecht mit Lücke *-**
@@ -83,7 +83,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 					{pl2++;}
 				if (board[column+2][row]==token) {pl2++;}
 				if (board[column+3][row]==token) {pl2++;}								
-				if (pl2==4) {zug++ ;  if(DEV_MODE) System.out.println("waagrecht 4er gebaut *_**");return column+1;}
+				if (pl2==4) {zug++ ;  if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 4er gebaut *_**");return column+1;}
 			}
 		}
 		//diagonal / mit Lücke **-*		
@@ -95,7 +95,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column+2][row+2]==token.empty && board[column+2][row+1]!=token.empty)
 					{pl2++;}
 				if (board[column+3][row+3]==token) {pl2++;}				
-				if (pl2==4) {zug++ ;  if(DEV_MODE) System.out.println("diagonal / 4er gebaut **_*");return column+2;}
+				if (pl2==4) {zug++ ;  if(VierGewinnt.DEV_MODE) System.out.println("diagonal / 4er gebaut **_*");return column+2;}
 			}
 		}
 //		diagonal / mit Lücke *-**		
@@ -107,7 +107,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 					{pl2++;}
 				if (board[column+2][row+2]==token) {pl2++;}
 				if (board[column+3][row+3]==token) {pl2++;}
-				if (pl2==4) {zug++ ;  if(DEV_MODE) System.out.println("diagonal / 4er gebaut *_**");return column+1;}		
+				if (pl2==4) {zug++ ;  if(VierGewinnt.DEV_MODE) System.out.println("diagonal / 4er gebaut *_**");return column+1;}		
 			}
 		}
 //		diagonal \ mit Lücke **-*		
@@ -119,7 +119,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column-2][row+2]==token.empty && board[column-2][row+1]!=token.empty)
 					{pl2++;}
 				if (board[column-3][row+3]==token) {pl2++;}				
-				if (pl2==4) {zug++ ; if(DEV_MODE) System.out.println("diagonal \\ 4er gebaut **_*");return column-2;}
+				if (pl2==4) {zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal \\ 4er gebaut **_*");return column-2;}
 			}
 		}
 //		diagonal \ mit Lücke *-**		
@@ -131,7 +131,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 					{pl2++;}
 				if (board[column-2][row+2]==token) {pl2++;}
 				if (board[column-3][row+3]==token) {pl2++;}
-				if (pl2==4) {zug++ ; if(DEV_MODE) System.out.println("diagonal \\ 4er gebaut *_**");return column-1;}		
+				if (pl2==4) {zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal \\ 4er gebaut *_**");return column-1;}		
 			}
 		}
 //		senkrecht		
@@ -141,7 +141,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column][row]==token) {pl2++;}
 				if (board[column][row]!=token) {pl2=0;}
 				if (pl2==3 && row<5 && (board[column][row+1]==token.empty))
-					{zug++ ; if(DEV_MODE) System.out.println("senkrecht 4er gebaut");return column;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("senkrecht 4er gebaut");return column;}
 			}
 		}
 //		diagonal /
@@ -153,7 +153,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column+2][row+2]==token) pl2++;
 				if (pl2==3 && (board[column+3][row+2]!=token.empty) && 
 					(board[column+3][row+3]==token.empty))
-					{zug++ ; column=column+3; if(DEV_MODE) System.out.println("diagonal / 4er gebaut ***_");return column;} 
+					{zug++ ; column=column+3; if(VierGewinnt.DEV_MODE) System.out.println("diagonal / 4er gebaut ***_");return column;} 
 			}
 		}
 //		diagonal \
@@ -165,7 +165,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column-2][row+2]==token) pl2++;
 				if (pl2==3 && (board[column-3][row+2]!=token.empty) && 
 					(board[column-3][row+3]==token.empty))
-					{zug++ ; column=column-3; if(DEV_MODE) System.out.println("diagonal \\ 4er gebaut _***");return column;} 
+					{zug++ ; column=column-3; if(VierGewinnt.DEV_MODE) System.out.println("diagonal \\ 4er gebaut _***");return column;} 
 			}
 		}
 		
@@ -177,10 +177,10 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column+1][row+1]==token) pl1++;
 				if (board[column+2][row+2]==token) pl1++;
 				if (row==1 && pl1==3 && (board[column-1][row-1]==token.empty))
-					{zug++ ; if(DEV_MODE) System.out.println("diagonal /  4er gebaut _***");return column-1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal /  4er gebaut _***");return column-1;}
 				if (row>1 && pl1==3 && (board[column-1][row-2]!=token.empty) && 
 					(board[column-1][row-1]==token.empty))
-					{zug++ ; if(DEV_MODE) System.out.println("diagonal /  4er gebaut _***");return column-1;} 
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal /  4er gebaut _***");return column-1;} 
 			}
 		}
 //		diagonal \_
@@ -191,10 +191,10 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column-1][row+1]==token) pl1++;
 				if (board[column-2][row+2]==token) pl1++;
 				if (row==1 && pl1==3 && (board[column+1][row-1]==token.empty))
-					{zug++ ; if(DEV_MODE) System.out.println("diagonal 4er gebaut \\ ***_");return column+1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal 4er gebaut \\ ***_");return column+1;}
 				if (row>1 && pl1==3 && (board[column+1][row-2]!=token.empty) &&
 					(board[column+1][row-1]==token.empty))
-					{zug++ ; if(DEV_MODE) System.out.println("diagonal 4er gebaut \\ ***_");return column+1;} 	
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal 4er gebaut \\ ***_");return column+1;} 	
 			}
 		}		
 
@@ -207,13 +207,13 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column][row]==token.player1) {pl1++;}
 				if (board[column][row]!=token.player1) {pl1=0;}
 				if (row==0 && pl1==3 && column<6 && board[column+1][row]==token.empty)
-					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 4er verhindert ***_ (Reihe 1)");return column+1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 4er verhindert ***_ (Reihe 1)");return column+1;}
 				if (row>0 && pl1==3 && column<6 && board[column+1][row]==token.empty && 
 					board[column+1][row-1]!=token.empty)
-					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 4er verhindert ***_ (Reihe > 1)");return column+1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 4er verhindert ***_ (Reihe > 1)");return column+1;}
 				if (row>1 && pl1==3 && column<6 && board[column+1][row]==token.empty && 
 					board[column+1][row-1]==token.empty && board[column+1][row-2]!=token.empty)
-					{if(DEV_MODE) System.out.println("waagrecht Lücke darf nicht gefüllt werden") ; scolumn[column+1]=true;}
+					{if(VierGewinnt.DEV_MODE) System.out.println("waagrecht Lücke darf nicht gefüllt werden") ; scolumn[column+1]=true;}
 			}
 		}
 //		waagrecht <-
@@ -223,13 +223,13 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column][row]==token.player1) {pl1++;}
 				if (board[column][row]!=token.player1) {pl1=0;}
 				if (row==0 && pl1==3 && (board[column-1][row]==token.empty))
-					{zug++ ; column=column-1 ; if(DEV_MODE) System.out.println("waagrecht  4er verhindert ***_ (Reihe 1)");return column;}
+					{zug++ ; column=column-1 ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht  4er verhindert ***_ (Reihe 1)");return column;}
 				if (row>0 && pl1==3 && (board[column-1][row]==token.empty && 
 					board[column-1][row-1]!=token.empty))
-					{zug++ ; column=column-1 ; if(DEV_MODE) System.out.println("waagrecht 4er verhindert _*** (Reihe > 1)");return column;}
+					{zug++ ; column=column-1 ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 4er verhindert _*** (Reihe > 1)");return column;}
 				if (row>1 && pl1==3 && board[column-1][row]==token.empty && 
 					board[column-1][row-1]==token.empty && board[column-1][row-2]!=token.empty)
-					{if(DEV_MODE) System.out.println("waagrecht Lücke darf nicht gefüllt werden") ; scolumn[column-1]=true;}
+					{if(VierGewinnt.DEV_MODE) System.out.println("waagrecht Lücke darf nicht gefüllt werden") ; scolumn[column-1]=true;}
 			}
 		}
 //		waagrecht mit Lücke **-*		
@@ -243,11 +243,11 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 					{pl1++;}
 				if (board[column+3][row]==optoken) {pl1++;}
 								
-				if (pl1==4) {zug++ ; if(DEV_MODE) System.out.println("waagrecht 4er verhindert **_*");return column+2;}
+				if (pl1==4) {zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 4er verhindert **_*");return column+2;}
 				if (row==1 && pl1==4 && board[column+2][row-1]==token.empty) 
-					{scolumn[column+2]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column+2]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 				if (row>1 && pl1==4 && board[column+2][row-1]==token.empty && board[column+2][row-2]!=token.empty) 
-					{scolumn[column+2]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column+2]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 			}
 		}
 //		waagrecht mit Lücke *-**		
@@ -260,11 +260,11 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 					{pl1++;}
 				if (board[column+2][row]==optoken) {pl1++;}
 				if (board[column+3][row]==optoken) {pl1++;}
-				if (pl1==4) {zug++ ; if(DEV_MODE) System.out.println("waagrecht 4er verhindert *_**");return column+1;}		
+				if (pl1==4) {zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 4er verhindert *_**");return column+1;}		
 				if (row==1 && pl1==4 && board[column+1][row-1]==token.empty) 
-					{scolumn[column+1]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column+1]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 				if (row>1 && pl1==4 && board[column+1][row-1]==token.empty && board[column+1][row-2]!=token.empty) 
-					{scolumn[column+1]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}			
+					{scolumn[column+1]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}			
 			
 			}
 		}
@@ -277,9 +277,9 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column+2][row+2]==token.empty && board[column+2][row+1]!=token.empty)
 					{pl1++;}
 				if (board[column+3][row+3]==optoken) {pl1++;}				
-				if (pl1==4) {zug++ ; if(DEV_MODE) System.out.println("diagonal /  4er verhindert **_*");return column+2;}
+				if (pl1==4) {zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal /  4er verhindert **_*");return column+2;}
 				if (pl1==4 && board[column+2][row+1]==token.empty && board[column+2][row]!=token.empty)
-					{scolumn[column+2]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column+2]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 			}
 		}
 //		diagonal / mit Lücke *-**		
@@ -291,12 +291,12 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 					{pl1++;}
 				if (board[column+2][row+2]==optoken) {pl1++;}
 				if (board[column+3][row+3]==optoken) {pl1++;}
-				if (pl1==4) {zug++ ; if(DEV_MODE) System.out.println("diagonal /  4er verhindert *_**");return column+1;}
+				if (pl1==4) {zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal /  4er verhindert *_**");return column+1;}
 				
 				if (row==1 && pl1==4 && board[column+1][row]==token.empty)
-					{scolumn[column+1]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column+1]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 				if (row>1 && pl1==4 && board[column+1][row]==token.empty && board[column+1][row-1]!=token.empty)
-					{scolumn[column+1]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column+1]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 			}
 		}
 //		diagonal \ mit Lücke **-*		
@@ -308,9 +308,9 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column-2][row+2]==token.empty && board[column-2][row+1]!=token.empty)
 					{pl1++;}
 				if (board[column-3][row+3]==optoken) {pl1++;}				
-				if (pl1==4) {zug++ ; if(DEV_MODE) System.out.println("diagonal \\  4er verhindert **_*");return column-2;}
+				if (pl1==4) {zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal \\  4er verhindert **_*");return column-2;}
 				if (pl1==4 && board[column-2][row+1]==token.empty && board[column-2][row]!=token.empty)
-					{scolumn[column-2]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column-2]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 				
 			}
 		}
@@ -323,12 +323,12 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 					{pl1++;}
 				if (board[column-2][row+2]==optoken) {pl1++;}
 				if (board[column-3][row+3]==optoken) {pl1++;}
-				if (pl1==4) {zug++ ; if(DEV_MODE) System.out.println("diagonal 4er \\ verhindert *_**");return column-1;}
+				if (pl1==4) {zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal 4er \\ verhindert *_**");return column-1;}
 				
 				if (row==1 && pl1==4 && board[column-1][row]==token.empty)
-					{scolumn[column-1]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column-1]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 				if (row>1 && pl1==4 && board[column-1][row]==token.empty && board[column-1][row-1]!=token.empty)
-					{scolumn[column-1]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column-1]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 			}
 		}		
 		
@@ -339,7 +339,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 			for(row=0 ; row<nrOfRows ; row++){
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column][row]!=optoken) {pl1=0;}
-				if (pl1==3 && row<5 && (board[column][row+1]==token.empty)) {zug++ ; if(DEV_MODE) System.out.println("senkrecht 4er verhindert");return column;}
+				if (pl1==3 && row<5 && (board[column][row+1]==token.empty)) {zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("senkrecht 4er verhindert");return column;}
 			}
 		}
 //		diagonal /_
@@ -351,10 +351,10 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column+2][row+2]==optoken) pl1++;
 				if (pl1==3 && (board[column+3][row+2]!=token.empty) && 
 					(board[column+3][row+3]==token.empty))
-					{zug++ ; column=column+3; if(DEV_MODE) System.out.println("diagonal /  4er verhindert ***_");return column;} 		
+					{zug++ ; column=column+3; if(VierGewinnt.DEV_MODE) System.out.println("diagonal /  4er verhindert ***_");return column;} 		
 				if (pl1==3 && board[column+3][row+3]==token.empty && board[column+3][row+2]==token.empty && 
 					board[column+3][row+1]!=token.empty)
-					{scolumn[column+3]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column+3]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 			
 			}
 		}
@@ -367,10 +367,10 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column-2][row+2]==optoken) pl1++;
 				if (pl1==3 && (board[column-3][row+2]!=token.empty) &&
 					(board[column-3][row+3]==token.empty))
-					{zug++ ; column=column-3; if(DEV_MODE) System.out.println("diagonal 4er verhindert \\ _***");return column;} 			
+					{zug++ ; column=column-3; if(VierGewinnt.DEV_MODE) System.out.println("diagonal 4er verhindert \\ _***");return column;} 			
 				if (pl1==3 && board[column-3][row+3]==token.empty && board[column-3][row+2]==token.empty && 
 					board[column-3][row+1]!=token.empty)
-					{scolumn[column-3]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column-3]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 			
 			}
 		}
@@ -383,16 +383,16 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column+1][row+1]==optoken) pl1++;
 				if (board[column+2][row+2]==optoken) pl1++;
 				if (row==1 && pl1==3 && (board[column-1][row-1]==token.empty))
-					{zug++ ; if(DEV_MODE) System.out.println("diagonal /  4er verhindert _***");return column-1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal /  4er verhindert _***");return column-1;}
 				if (row>1 && pl1==3 && (board[column-1][row-2]!=token.empty) && 
 					(board[column-1][row-1]==token.empty))
-					{zug++ ; if(DEV_MODE) System.out.println("diagonal /  4er verhindert _***");return column-1;} 
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal /  4er verhindert _***");return column-1;} 
 				if (row==2 && pl1==3 && board[column-1][row-1]==token.empty && board[column-1][row-2]==token.empty)
-					{scolumn[column-1]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}	
+					{scolumn[column-1]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}	
 				
 				if (row>2 && pl1==3 && board[column-1][row-1]==token.empty && board[column-1][row-2]==token.empty && 
 					board[column-1][row-3]!=token.empty)
-					{scolumn[column-1]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column-1]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 			}
 		}
 //		diagonal \_
@@ -403,16 +403,16 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column-1][row+1]==optoken) pl1++;
 				if (board[column-2][row+2]==optoken) pl1++;
 				if (row==1 && pl1==3 && (board[column+1][row-1]==token.empty))
-					{zug++ ; if(DEV_MODE) System.out.println("diagonal 4er verhindert \\ ***_");return column+1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal 4er verhindert \\ ***_");return column+1;}
 				if (row>1 && pl1==3 && (board[column+1][row-2]!=token.empty) &&
 					(board[column+1][row-1]==token.empty))
-					{zug++ ; if(DEV_MODE) System.out.println("diagonal 4er verhindert \\ ***_");return column+1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("diagonal 4er verhindert \\ ***_");return column+1;}
 	
 				if (row==2 && pl1==3 && board[column+1][row-1]==token.empty && board[column+1][row-2]==token.empty)
-					{scolumn[column+1]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column+1]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 				if (row>2 && pl1==3 && board[column+1][row-1]==token.empty && board[column+1][row-2]==token.empty && 
 					board[column+1][row-3]!=token.empty)
-					{scolumn[column+1]=true ; if(DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
+					{scolumn[column+1]=true ; if(VierGewinnt.DEV_MODE) System.out.println("lücke darf nicht gefüllt werden");}
 			}
 		}
 //---------------------------------------------------------------------------------------------------------		
@@ -424,9 +424,9 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column][row]!=optoken) {pl1=0;}
 				if (scolumn[column+1]!=true && row==0 && pl1==2 && column<(nrOfColumns-1) && (board[column+1][row]==token.empty))
-					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 3er verhindert **_");return column+1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 3er verhindert **_");return column+1;}
 				if (scolumn[column+1]!=true && row>0 && pl1==2 && column<(nrOfColumns-1) && (board[column+1][row]==token.empty) && board[column+1][row-1]!=token.empty)
-					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 3er verhindert **_");return column+1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 3er verhindert **_");return column+1;}
 			}
 		}
 //		waagrecht <-
@@ -436,9 +436,9 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column][row]!=optoken) {pl1=0;}
 				if (scolumn[column-1]!=true && row==0 && pl1==2 && (board[column-1][row]==token.empty)) 
-					{zug++ ; column=column-1 ; if(DEV_MODE) System.out.println("waagrecht 3er verhindert _**");return column;}
+					{zug++ ; column=column-1 ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 3er verhindert _**");return column;}
 				if (scolumn[column-1]!=true &&row>0 && pl1==2 && (board[column-1][row]==token.empty) && board[column-1][row-1]!=token.empty) 
-					{zug++ ; column=column-1 ; if(DEV_MODE) System.out.println("waagrecht 3er verhindert _**");return column;}
+					{zug++ ; column=column-1 ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 3er verhindert _**");return column;}
 			}
 		}
 //		senkrecht
@@ -449,7 +449,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column][row]==optoken) {pl1++;}
 				if (board[column][row]!=optoken) {pl1=0;}
 				if (scolumn[column]!=true && pl1==2 && row<5 && (board[column][row+1]==token.empty)) 
-					{zug++ ; if(DEV_MODE) System.out.println("senkrecht 3er verhindert");return column;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("senkrecht 3er verhindert");return column;}
 			}
 		}
 //		diagonal /
@@ -461,7 +461,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column+2][row+2]==optoken) pl1++;
 				if (scolumn[column+2]!=true && pl1==2 && (board[column+2][row+1]!=token.empty) && 
 					(board[column+2][row+2]==token.empty))
-					{zug++ ; column=column+2; if(DEV_MODE) System.out.println("diagonal / 3er verhindert ***_");return column;} 
+					{zug++ ; column=column+2; if(VierGewinnt.DEV_MODE) System.out.println("diagonal / 3er verhindert ***_");return column;} 
 					
 			}
 		}
@@ -474,7 +474,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column-2][row+2]==optoken) pl1++;
 				if (scolumn[column-2]!=true && pl1==2 && (board[column-2][row+1]!=token.empty) && 
 					(board[column-2][row+2]==token.empty))
-					{zug++ ; column=column-2; if(DEV_MODE) System.out.println("diagonal \\ 3er verhindert _***"); return column;} 
+					{zug++ ; column=column-2; if(VierGewinnt.DEV_MODE) System.out.println("diagonal \\ 3er verhindert _***"); return column;} 
 					
 			}
 		}
@@ -486,9 +486,9 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column][row]==token) {pl2++;}
 				if (board[column][row]!=token) {pl2=0;}
 				if (scolumn[column+1]!=true && row==0 && pl2==2 && column<6 && board[column+1][row]==token.empty) 
-					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 3er gebaut  **_");return column+1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 3er gebaut  **_");return column+1;}
 				if (scolumn[column+1]!=true && row>0 && pl2==2 && column<6 && board[column+1][row]==token.empty && board[column+1][row-1]!=token.empty) 
-					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 3er gebaut  **_");return column+1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 3er gebaut  **_");return column+1;}
 			}
 		}
 //		waagrecht <-
@@ -498,9 +498,9 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column][row]==token) {pl2++;}
 				if (board[column][row]!=token) {pl2=0;}
 				if (scolumn[column-1]!=true && row==0 && pl2==2 && column<6 && (board[column-1][row]==token.empty)) 
-					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 3er gebaut  _**");return column-1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 3er gebaut  _**");return column-1;}
 				if (scolumn[column-1]!=true && row>0 && pl2==2 && column<6 && (board[column-1][row]==token.empty) && board[column-1][row-1]!=token.empty) 
-					{zug++ ; if(DEV_MODE) System.out.println("waagrecht 3er gebaut  _**");return column-1;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("waagrecht 3er gebaut  _**");return column-1;}
 			}
 		}
 //		senkrecht		
@@ -510,7 +510,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column][row]==token) {pl2++;}
 				if (board[column][row]!=token) {pl2=0;}
 				if (scolumn[column]!=true && pl2==2 && row<5 && (board[column][row+1]==token.empty)) 
-					{zug++ ; if(DEV_MODE) System.out.println("senkrecht 3er gebaut");return column;}
+					{zug++ ; if(VierGewinnt.DEV_MODE) System.out.println("senkrecht 3er gebaut");return column;}
 			}
 		}
 //		diagonal /
@@ -522,7 +522,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column+2][row+2]==token) pl2++;
 				if (scolumn[column+2]!=true && pl2==2 && (board[column+2][row+1]!=token.empty) && 
 					(board[column+2][row+2]==token.empty))
-					{zug++ ; column=column+2; if(DEV_MODE) System.out.println("diagonal / 3er gebaut  **_");return column;} 
+					{zug++ ; column=column+2; if(VierGewinnt.DEV_MODE) System.out.println("diagonal / 3er gebaut  **_");return column;} 
 			}
 		}
 //		diagonal \
@@ -534,7 +534,7 @@ public class ComputerPlayerRulesAdvanced implements IPlayer{
 				if (board[column-2][row+2]==token) pl2++;
 				if (scolumn[column-2]!=true && pl2==3 && (board[column-2][row+1]!=token.empty) && 
 					(board[column-2][row+2]==token.empty))
-					{zug++ ; column=column-2; if(DEV_MODE) System.out.println("diagonal \\ 3er gebaut  _**");return column;} 
+					{zug++ ; column=column-2; if(VierGewinnt.DEV_MODE) System.out.println("diagonal \\ 3er gebaut  _**");return column;} 
 			}
 		}
 //---------------------------------------------------------------------------------------------------------------------------

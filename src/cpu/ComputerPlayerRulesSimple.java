@@ -1,22 +1,6 @@
 package cpu;
 
 import viergewinnt.*;
-
-/**mein ansatz: computer sucht in dieser Reihenfolge nach Möglichkeiten:
-1. Kann er selbst einen 4er kompletisieren?
-2. Kann er einen 4er vom hp verhindern? (bei mehreren, welchen?)
-3. Kann er einen 3er des hp verhindern? (nicht unbedingt optimal)
-4. Kann er selbst einen 3er erweitern?
-
-5. Random
-Für meine eigene Übersicht, habe ich die 2 For-schleifen immer wieder neu geschrieben,
-dies ginge natürlich auch noch viel effizienter!
-
-*/
-
-
-
-
 import java.util.Random;
 
 

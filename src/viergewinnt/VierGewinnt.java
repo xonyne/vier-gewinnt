@@ -11,6 +11,8 @@ public class VierGewinnt {
     private static long pl2wins;
     private static long draws;
     private static int max;
+    
+    public static boolean DEV_MODE=false;
 
     private Token[][] board;
     private static IPlayer[] players = new IPlayer[2]; // two players
@@ -92,8 +94,10 @@ public class VierGewinnt {
             //save Spielzug
             zugCounter++;
             spielzuege.add((zugCounter < 10 ? "0" + zugCounter : zugCounter) + "(" + players[currentPlayer].getToken() + "): " + (insertCol + 1));
+            // print out 
+            System.out.println("Turn " + zugCounter + ": Player " + players[currentPlayer].getToken() + " played column: " + (insertCol + 1) + ", row: " + (insertRow + 1));
             //switch to other player
-            if (!solved) {
+            if (!solved) { 
                 currentPlayer = (currentPlayer + 1) % 2;
             }
         }
@@ -289,7 +293,7 @@ public class VierGewinnt {
             System.out.println("3. Computer Player \"Simple rules\"");
             System.out.println("4. Computer Player \"Advanced Rules\"");
             System.out.println("5. Computer Player \"Cheap Rush Trick\"");
-            System.out.println("6. Computer Player \"Search Tree Alpha Beta\"");
+            System.out.println("6. Computer Player \"Search Tree\"");
 
             System.out.print("Choose player 1 (1-6): ");
             int pl1 = new Scanner(System.in).nextInt();
@@ -343,7 +347,7 @@ public class VierGewinnt {
                     players[0] = new ComputerPlayerCheapRushTrick();
                     break;
                 case 6:
-                    players[0] = new ComputerPlayerSearchTreeAlphaBeta();
+                    players[0] = new ComputerPlayerSearchTree();
                     break;
             }
 
@@ -364,7 +368,7 @@ public class VierGewinnt {
                     players[1] = new ComputerPlayerCheapRushTrick();
                     break;
                 case 6:
-                    players[1] = new ComputerPlayerSearchTreeAlphaBeta();
+                    players[1] = new ComputerPlayerSearchTree();
                     break;
             }
         } else {
@@ -373,7 +377,7 @@ public class VierGewinnt {
             humanPlays = true;
             stopSimulation = false;
             players[0] = new HumanPlayer();
-            players[1] = new ComputerPlayerSearchTreeAlphaBeta();
+            players[1] = new ComputerPlayerSearchTree();
         }
 
         VierGewinnt game = new VierGewinnt(nrOfColumns, nrOfRows);
