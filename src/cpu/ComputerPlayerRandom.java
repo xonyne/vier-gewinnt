@@ -16,7 +16,7 @@ public class ComputerPlayerRandom implements IPlayer{
 		
                 int column = -1;
 		
-		while(column < 0 || column > board.length - 1){
+		while(column < 0 || column > board.length){
 			
 			column=generator.nextInt(nrOfColumns);
 			if(column >= 0 && column < board.length){
